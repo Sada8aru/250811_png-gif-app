@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X用ポスト画像生成ツール</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="gif.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/omggif@1.0.10/omggif.js"></script>
+</head>
+
+<body>
+    <div class="app">
+        <header class="app__header">
+            <h1 class="app__title">X用ポスト画像生成ツール</h1>
+            <p class="app__description">透過画像と背景画像を組み合わせてPNG/GIFを生成</p>
+        </header>
+
+        <main class="app__main">
+            <!-- ファイルアップロードエリア -->
+            <section class="upload-section">
+                <div class="upload-area">
+                    <div class="upload-area__background">
+                        <div class="upload-area__dropzone" id="backgroundDropzone">
+                            <div class="upload-area__icon">🖼️</div>
+                            <p class="upload-area__text">背景画像をドラッグ&ドロップ</p>
+                            <p class="upload-area__subtext">または</p>
+                            <button class="upload-area__button" type="button" id="backgroundButton">ファイルを選択</button>
+                            <input type="file" id="backgroundInput" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="upload-area__transparent">
+                        <div class="upload-area__dropzone" id="transparentDropzone">
+                            <div class="upload-area__icon">✨</div>
+                            <p class="upload-area__text">透過画像をドラッグ&ドロップ</p>
+                            <p class="upload-area__subtext">複数PNG/JPG選択 または GIF1ファイル</p>
+                            <button class="upload-area__button" type="button" id="transparentButton">ファイルを選択</button>
+                            <input type="file" id="transparentInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- プレビューエリア -->
+            <section class="preview-section">
+                <div class="preview-container" id="previewContainer">
+                    <canvas id="previewCanvas" class="preview-canvas"></canvas>
+                    <div class="preview-placeholder" id="previewPlaceholder">
+                        <p>画像をアップロードするとプレビューが表示されます</p>
+                    </div>
+
+                    <!-- バウンディングボックス -->
+                    <div id="boundingBox" class="bounding-box" style="display: none;">
+                        <div class="bounding-box__handle bounding-box__handle--nw"></div>
+                        <div class="bounding-box__handle bounding-box__handle--ne"></div>
+                        <div class="bounding-box__handle bounding-box__handle--sw"></div>
+                        <div class="bounding-box__handle bounding-box__handle--se"></div>
+                        <div class="bounding-box__border bounding-box__border--top"></div>
+                        <div class="bounding-box__border bounding-box__border--right"></div>
+                        <div class="bounding-box__border bounding-box__border--bottom"></div>
+                        <div class="bounding-box__border bounding-box__border--left"></div>
+                    </div>
+
+                    <!-- トリミング枠 -->
+                    <div id="cropBox" class="crop-box" style="display: none;">
+                        <div class="crop-box__handle crop-box__handle--nw"></div>
+                        <div class="crop-box__handle crop-box__handle--ne"></div>
+                        <div class="crop-box__handle crop-box__handle--sw"></div>
+                        <div class="crop-box__handle crop-box__handle--se"></div>
+                        <div class="crop-box__handle crop-box__handle--n"></div>
+                        <div class="crop-box__handle crop-box__handle--e"></div>
+                        <div class="crop-box__handle crop-box__handle--s"></div>
+                        <div class="crop-box__handle crop-box__handle--w"></div>
+                        <div class="crop-box__overlay crop-box__overlay--top"></div>
+                        <div class="crop-box__overlay crop-box__overlay--right"></div>
+                        <div class="crop-box__overlay crop-box__overlay--bottom"></div>
+                        <div class="crop-box__overlay crop-box__overlay--left"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- コントロールパネル -->
+            <section class="control-section">
+                <div class="control-panel">
+                    <div class="control-group">
+                        <h3 class="control-group__title">拡大設定</h3>
+                        <div class="control-item">
+                            <label for="scaleInput" class="control-item__label">倍率:</label>
+                            <input type="number" id="scaleInput" class="control-item__input" min="1" value="1" step="1">
+                            <span class="control-item__unit">倍</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3 class="control-group__title">アニメーション設定</h3>
+                        <div class="control-item">
+                            <label for="animationSpeedInput" class="control-item__label">再生速度:</label>
+                            <input type="range" id="animationSpeedInput" class="control-item__slider" min="50"
+                                max="2000" value="500" step="50">
+                            <span class="control-item__unit" id="animationSpeedValue">500ms</span>
+                        </div>
+                        <div class="control-item">
+                            <small class="control-item__description">値が小さいほど高速再生（50ms = 高速、2000ms = 低速）<br>
+                                ※GIF読み込み時は元の速度に合わせて範囲が自動調整されます</small>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3 class="control-group__title">操作モード</h3>
+                        <div class="control-item">
+                            <button id="cropModeToggle" class="control-item__button control-item__button--mode"
+                                type="button">
+                                📐 トリミングモード
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group" id="cropControls" style="display: none;">
+                        <h3 class="control-group__title">アスペクト比</h3>
+                        <div class="control-item">
+                            <select id="aspectRatioSelect" class="control-item__select">
+                                <option value="original">元の比率</option>
+                                <option value="free">自由形式</option>
+                                <option value="1:1">1:1 (正方形)</option>
+                                <option value="16:9">16:9 (横長)</option>
+                                <option value="4:3">4:3 (標準)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3 class="control-group__title">エクスポート</h3>
+                        <div class="control-item">
+                            <button id="exportPngButton" class="control-item__button control-item__button--primary"
+                                disabled>
+                                PNG形式でダウンロード
+                            </button>
+                            <button id="exportGifButton" class="control-item__button control-item__button--secondary"
+                                disabled>
+                                GIF形式でダウンロード
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- エラーメッセージ表示エリア -->
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
