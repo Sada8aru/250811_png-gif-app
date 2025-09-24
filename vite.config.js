@@ -1,11 +1,15 @@
-import { defineConfig } from 'vite'
+import { resolve } from "path";
+import { defineConfig } from "vite";
+
+const root = resolve(__dirname, "src");
 
 export default defineConfig({
-  root: '.',
+  root,
   build: {
-    outDir: 'dist',
+    outDir: resolve(__dirname, "dist"),
     rollupOptions: {
-      input: '/index.html'
-    }
-  }
-})
+      input: resolve(root, "index.html"),
+    },
+  },
+  base: process.env.BASE_PATH ? "/250811_png-gif-app/" : "./",
+});
