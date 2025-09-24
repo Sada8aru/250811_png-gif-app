@@ -1,0 +1,16 @@
+{
+  "name": "250811_png-gif-app",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gif.js": "^0.2.0",
+    "gifuct-js": "^2.1.2",
+    "omggif": "^1.0.10"
+  },
+  "devDependencies": {
+    "vite": "^7.1.6"
+  }
+}

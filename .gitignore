@@ -1,2 +1,4 @@
 .vscode
 .kiro
+node_modules
+.idea
