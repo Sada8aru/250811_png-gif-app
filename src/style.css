@@ -449,7 +449,6 @@ body {
 /* スライダー専用スタイル */
 .control-item__slider {
   flex: 1;
-  -webkit-appearance: none;
   outline: none;
   border-radius: 3px;
   background: #ddd;

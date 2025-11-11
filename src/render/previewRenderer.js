@@ -39,13 +39,21 @@ const setBoundingBoxSelected = (selected) => {
 };
 const isBoundingBoxActive = () => isBoundingBoxSelected;
 
-const calculateTransparentImagePosition = (transparentImg, scale, pos, bg, cropArea = null) => {
+const calculateTransparentImagePosition = (
+  transparentImg,
+  scale,
+  pos,
+  bg,
+  cropArea = null,
+  options = {},
+) => {
+  const { useCropAreaOffset = true } = options;
   const scaledWidth = transparentImg.metadata.width * scale;
   const scaledHeight = transparentImg.metadata.height * scale;
   const baseX = pos.x + (bg.metadata.width - scaledWidth) / 2;
   const baseY = pos.y + (bg.metadata.height - scaledHeight) / 2;
 
-  if (cropArea) {
+  if (cropArea && useCropAreaOffset) {
     const relativeX = baseX - cropArea.x;
     const relativeY = baseY - cropArea.y;
 
@@ -174,7 +182,9 @@ const updatePreview = () => {
       if (currentFrame) {
         const scale = projectState.transformState.scale;
         const pos = projectState.transformState.position;
-        const imagePos = calculateTransparentImagePosition(currentFrame, scale, pos, bg, cropArea);
+        const imagePos = calculateTransparentImagePosition(currentFrame, scale, pos, bg, cropArea, {
+          useCropAreaOffset: !isCropMode,
+        });
 
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(currentFrame.image, imagePos.x, imagePos.y, imagePos.width, imagePos.height);
@@ -208,7 +218,9 @@ const updatePreview = () => {
     const transparentImg = projectState.transparentImages[0];
     const scale = projectState.transformState.scale;
     const pos = projectState.transformState.position;
-    const imagePos = calculateTransparentImagePosition(transparentImg, scale, pos, bg, cropArea);
+    const imagePos = calculateTransparentImagePosition(transparentImg, scale, pos, bg, cropArea, {
+      useCropAreaOffset: !isCropMode,
+    });
 
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(transparentImg.image, imagePos.x, imagePos.y, imagePos.width, imagePos.height);
