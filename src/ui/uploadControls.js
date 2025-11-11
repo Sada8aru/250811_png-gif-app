@@ -27,6 +27,20 @@ let scaleInput;
 let aspectRatioSelect;
 let animationSpeedInput;
 let animationSpeedValue;
+const DEFAULT_FRAME_DELAY = 500;
+const getCurrentAnimationType = () => {
+  if (projectState.transparentImages.length === 0) return null;
+  const hasGifFrame = projectState.transparentImages.some((img) => img.frameInfo?.isFromGif);
+  if (hasGifFrame) return "gif";
+  if (projectState.transparentImages.length > 1) return "sequence";
+  return null;
+};
+
+const detectIncomingAnimationType = (files) => {
+  if (files.some((file) => isGifFile(file))) return "gif";
+  if (files.length > 1) return "sequence";
+  return null;
+};
 
 const ensureHintElement = (dropzone) => {
   let hint = dropzone.querySelector(".upload-area__hint");
@@ -171,17 +185,33 @@ const handleTransparentImageUpload = async (files) => {
       validFiles.map((f) => f.name),
     );
 
+    const hadTransparentImages = projectState.transparentImages.length > 0;
+    const previousAnimationType = getCurrentAnimationType();
+    const incomingAnimationType = detectIncomingAnimationType(validFiles);
+
     projectState.transparentImages = [];
-    projectState.transformState.position = { x: 0, y: 0 };
-    projectState.transformState.scale = 1;
-    scaleInput.value = 1;
+
+    if (!hadTransparentImages) {
+      projectState.transformState.position = { x: 0, y: 0 };
+    }
+
+    const shouldKeepScale =
+      hadTransparentImages &&
+      previousAnimationType === "sequence" &&
+      incomingAnimationType === "sequence";
+
+    if (!shouldKeepScale) {
+      projectState.transformState.scale = 1;
+      scaleInput.value = 1;
+    } else {
+      scaleInput.value = projectState.transformState.scale;
+    }
 
     for (const file of validFiles) {
       if (isGifFile(file)) {
         console.log("GIFファイルを処理中:", file.name);
         try {
           const frames = await extractGifFrames(file, { fullFrame: true });
-
           const originalDelays = frames.map((frame) => frame.delay);
           const avgDelay =
             originalDelays.reduce((sum, delay) => sum + delay, 0) / originalDelays.length;
@@ -190,8 +220,8 @@ const handleTransparentImageUpload = async (files) => {
 
           if (avgDelay > 0) {
             const roundedAvgDelay = Math.round(avgDelay);
-            const currentMin = parseInt(animationSpeedInput.min);
-            const currentMax = parseInt(animationSpeedInput.max);
+            const currentMin = parseInt(animationSpeedInput.min, 10);
+            const currentMax = parseInt(animationSpeedInput.max, 10);
             const newMin = Math.min(currentMin, Math.max(10, Math.round(minDelay)));
             const newMax = Math.max(currentMax, Math.round(maxDelay));
 
@@ -207,6 +237,14 @@ const handleTransparentImageUpload = async (files) => {
               `GIFの元フレーム間隔を適用: ${roundedAvgDelay}ms (範囲: ${newMin}-${newMax}ms)`,
             );
             console.log(`フレーム間隔の詳細:`, originalDelays);
+          } else {
+            animationSpeedInput.min = 50;
+            animationSpeedInput.max = 2000;
+            animationSpeedInput.step = 50;
+            projectState.animationSettings.frameDelay = DEFAULT_FRAME_DELAY;
+            animationSpeedInput.value = DEFAULT_FRAME_DELAY;
+            animationSpeedValue.textContent = `${DEFAULT_FRAME_DELAY}ms`;
+            console.log("GIFのディレイ情報が欠落していたため、デフォルト500msを適用");
           }
 
           for (let i = 0; i < frames.length; i++) {
@@ -241,14 +279,25 @@ const handleTransparentImageUpload = async (files) => {
     }
 
     const hasGifFrames = projectState.transparentImages.some((img) => img.frameInfo?.isFromGif);
-    if (!hasGifFrames && validFiles.length > 1) {
+    if (incomingAnimationType === "sequence" && !hasGifFrames) {
       animationSpeedInput.min = 50;
       animationSpeedInput.max = 2000;
       animationSpeedInput.step = 50;
-      animationSpeedInput.value = 500;
-      animationSpeedValue.textContent = "500ms";
-      projectState.animationSettings.frameDelay = 500;
-      console.log("静止画アニメーション用にデフォルト設定を適用");
+
+      const shouldKeepSequenceSpeed =
+        previousAnimationType === "sequence" && incomingAnimationType === "sequence";
+
+      if (shouldKeepSequenceSpeed) {
+        const currentDelay = projectState.animationSettings.frameDelay;
+        animationSpeedInput.value = currentDelay;
+        animationSpeedValue.textContent = `${currentDelay}ms`;
+        console.log("連番PNGどうしの差し替え: 再生速度を維持");
+      } else {
+        projectState.animationSettings.frameDelay = DEFAULT_FRAME_DELAY;
+        animationSpeedInput.value = DEFAULT_FRAME_DELAY;
+        animationSpeedValue.textContent = `${DEFAULT_FRAME_DELAY}ms`;
+        console.log("連番PNGアニメーションをデフォルト500msに設定");
+      }
     }
 
     const totalFrames = projectState.transparentImages.length;

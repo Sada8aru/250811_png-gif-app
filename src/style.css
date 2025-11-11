@@ -92,6 +92,8 @@ body {
 
 .upload-area__text {
   margin-bottom: 5px;
+  max-height: 150px;
+  overflow-y: auto;
   color: #333;
   font-weight: 600;
   font-size: 1.1rem;
