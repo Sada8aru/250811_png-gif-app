@@ -90,10 +90,7 @@ const handleDrag = (e) => {
 
     if (handleClass.includes("--nw") || handleClass.includes("--sw")) {
       scaleDelta = -deltaX;
-    } else if (
-      handleClass.includes("--ne") ||
-      handleClass.includes("--se")
-    ) {
+    } else if (handleClass.includes("--ne") || handleClass.includes("--se")) {
       scaleDelta = deltaX;
     }
 
@@ -196,14 +193,8 @@ const handleCropDrag = (e) => {
     const cropArea = projectState.transformState.cropArea;
     if (!cropArea) return;
 
-    const newX = Math.max(
-      0,
-      Math.min(bg.metadata.width - cropArea.width, cropArea.x + moveX)
-    );
-    const newY = Math.max(
-      0,
-      Math.min(bg.metadata.height - cropArea.height, cropArea.y + moveY)
-    );
+    const newX = Math.max(0, Math.min(bg.metadata.width - cropArea.width, cropArea.x + moveX));
+    const newY = Math.max(0, Math.min(bg.metadata.height - cropArea.height, cropArea.y + moveY));
 
     projectState.transformState.cropArea.x = newX;
     projectState.transformState.cropArea.y = newY;
@@ -312,18 +303,10 @@ const setupCanvasClick = () => {
     const clickX = e.clientX - canvasRect.left;
     const clickY = e.clientY - canvasRect.top;
 
-    const imagePos = calculateTransparentImagePosition(
-      transparentImg,
-      scale,
-      pos,
-      bg,
-      cropArea
-    );
+    const imagePos = calculateTransparentImagePosition(transparentImg, scale, pos, bg, cropArea);
 
-    const scaleX = canvasRect.width /
-      (cropArea ? cropArea.width : bg.metadata.width);
-    const scaleY = canvasRect.height /
-      (cropArea ? cropArea.height : bg.metadata.height);
+    const scaleX = canvasRect.width / (cropArea ? cropArea.width : bg.metadata.width);
+    const scaleY = canvasRect.height / (cropArea ? cropArea.height : bg.metadata.height);
     const actualScale = Math.min(scaleX, scaleY);
 
     const offsetX = cropArea

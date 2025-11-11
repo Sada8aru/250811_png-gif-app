@@ -59,9 +59,7 @@ const setupDragAndDrop = () => {
     });
   };
 
-  setupDropzone(backgroundDropzone, (files) =>
-    handleBackgroundImageUpload(files[0])
-  );
+  setupDropzone(backgroundDropzone, (files) => handleBackgroundImageUpload(files[0]));
   setupDropzone(transparentDropzone, handleTransparentImageUpload);
 };
 
@@ -126,14 +124,14 @@ const handleBackgroundImageUpload = async (file) => {
 
 const handleTransparentImageUpload = async (files) => {
   const validFiles = Array.from(files).filter((file) =>
-    validateImageFile(file, { onInvalid: showError })
+    validateImageFile(file, { onInvalid: showError }),
   );
   if (validFiles.length === 0) return;
 
   try {
     console.log(
       "透過画像読み込み開始:",
-      validFiles.map((f) => f.name)
+      validFiles.map((f) => f.name),
     );
 
     projectState.transparentImages = [];
@@ -149,8 +147,7 @@ const handleTransparentImageUpload = async (files) => {
 
           const originalDelays = frames.map((frame) => frame.delay);
           const avgDelay =
-            originalDelays.reduce((sum, delay) => sum + delay, 0) /
-            originalDelays.length;
+            originalDelays.reduce((sum, delay) => sum + delay, 0) / originalDelays.length;
           const minDelay = Math.min(...originalDelays);
           const maxDelay = Math.max(...originalDelays);
 
@@ -158,10 +155,7 @@ const handleTransparentImageUpload = async (files) => {
             const roundedAvgDelay = Math.round(avgDelay);
             const currentMin = parseInt(animationSpeedInput.min);
             const currentMax = parseInt(animationSpeedInput.max);
-            const newMin = Math.min(
-              currentMin,
-              Math.max(10, Math.round(minDelay))
-            );
+            const newMin = Math.min(currentMin, Math.max(10, Math.round(minDelay)));
             const newMax = Math.max(currentMax, Math.round(maxDelay));
 
             animationSpeedInput.min = newMin;
@@ -173,7 +167,7 @@ const handleTransparentImageUpload = async (files) => {
             animationSpeedValue.textContent = `${roundedAvgDelay}ms`;
 
             console.log(
-              `GIFの元フレーム間隔を適用: ${roundedAvgDelay}ms (範囲: ${newMin}-${newMax}ms)`
+              `GIFの元フレーム間隔を適用: ${roundedAvgDelay}ms (範囲: ${newMin}-${newMax}ms)`,
             );
             console.log(`フレーム間隔の詳細:`, originalDelays);
           }
@@ -197,9 +191,7 @@ const handleTransparentImageUpload = async (files) => {
           console.log(`GIFから ${frames.length} フレームを抽出しました`);
         } catch (error) {
           console.error("GIF処理エラー:", error);
-          showError(
-            `GIFファイル ${file.name} の処理に失敗しました: ${error.message}`
-          );
+          showError(`GIFファイル ${file.name} の処理に失敗しました: ${error.message}`);
           const image = await loadImage(file);
           const imageData = createImageData(file, image);
           projectState.transparentImages.push(imageData);
@@ -211,9 +203,7 @@ const handleTransparentImageUpload = async (files) => {
       }
     }
 
-    const hasGifFrames = projectState.transparentImages.some(
-      (img) => img.frameInfo?.isFromGif
-    );
+    const hasGifFrames = projectState.transparentImages.some((img) => img.frameInfo?.isFromGif);
     if (!hasGifFrames && validFiles.length > 1) {
       animationSpeedInput.min = 50;
       animationSpeedInput.max = 2000;
@@ -262,8 +252,4 @@ const setupUploadControls = () => {
   setupFileInputs();
 };
 
-export {
-  setupUploadControls,
-  handleBackgroundImageUpload,
-  handleTransparentImageUpload,
-};
+export { setupUploadControls, handleBackgroundImageUpload, handleTransparentImageUpload };

@@ -25,10 +25,7 @@ const initControlDomRefs = () => {
 };
 
 const checkScaleWarning = () => {
-  if (
-    !projectState.backgroundImage ||
-    projectState.transparentImages.length === 0
-  ) {
+  if (!projectState.backgroundImage || projectState.transparentImages.length === 0) {
     return;
   }
 
@@ -44,7 +41,7 @@ const checkScaleWarning = () => {
     scaledHeight > projectState.outputSettings.maxHeight
   ) {
     showError(
-      `拡大後のサイズ（${scaledWidth}×${scaledHeight}px）が出力サイズ制限（${projectState.outputSettings.maxWidth}×${projectState.outputSettings.maxHeight}px）を超えています。`
+      `拡大後のサイズ（${scaledWidth}×${scaledHeight}px）が出力サイズ制限（${projectState.outputSettings.maxWidth}×${projectState.outputSettings.maxHeight}px）を超えています。`,
     );
   }
 };

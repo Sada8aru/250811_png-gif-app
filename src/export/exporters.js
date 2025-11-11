@@ -5,10 +5,7 @@ import { showError, showSuccess } from "../ui/notifications";
 import { calculateTransparentImagePosition } from "../render/previewRenderer";
 
 const exportAsPNG = () => {
-  if (
-    !projectState.backgroundImage ||
-    projectState.transparentImages.length === 0
-  ) {
+  if (!projectState.backgroundImage || projectState.transparentImages.length === 0) {
     showError("背景画像と透過画像の両方が必要です");
     return;
   }
@@ -41,28 +38,16 @@ const exportAsPNG = () => {
         0,
         0,
         exportCanvas.width,
-        exportCanvas.height
+        exportCanvas.height,
       );
     } else {
       ctx.drawImage(bg.image, 0, 0);
     }
 
-    const imagePos = calculateTransparentImagePosition(
-      transparentImg,
-      scale,
-      pos,
-      bg,
-      cropArea
-    );
+    const imagePos = calculateTransparentImagePosition(transparentImg, scale, pos, bg, cropArea);
 
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(
-      transparentImg.image,
-      imagePos.x,
-      imagePos.y,
-      imagePos.width,
-      imagePos.height
-    );
+    ctx.drawImage(transparentImg.image, imagePos.x, imagePos.y, imagePos.width, imagePos.height);
 
     exportCanvas.toBlob((blob) => {
       if (blob) {
@@ -88,18 +73,13 @@ const exportAsPNG = () => {
 };
 
 const exportAsGIF = () => {
-  if (
-    !projectState.backgroundImage ||
-    projectState.transparentImages.length === 0
-  ) {
+  if (!projectState.backgroundImage || projectState.transparentImages.length === 0) {
     showError("背景画像と透過画像の両方が必要です");
     return;
   }
 
   if (projectState.transparentImages.length === 1) {
-    showError(
-      "GIF生成には複数の透過画像が必要です。単一画像の場合はPNGをご利用ください。"
-    );
+    showError("GIF生成には複数の透過画像が必要です。単一画像の場合はPNGをご利用ください。");
     return;
   }
 
@@ -151,7 +131,7 @@ const exportAsGIF = () => {
             0,
             0,
             canvasWidth,
-            canvasHeight
+            canvasHeight,
           );
         } else {
           ctx.drawImage(bg.image, 0, 0);
@@ -162,7 +142,7 @@ const exportAsGIF = () => {
           scale,
           pos,
           bg,
-          cropArea
+          cropArea,
         );
 
         ctx.imageSmoothingEnabled = false;
@@ -171,7 +151,7 @@ const exportAsGIF = () => {
           imagePos.x,
           imagePos.y,
           imagePos.width,
-          imagePos.height
+          imagePos.height,
         );
 
         gif.addFrame(frameCanvas, {
@@ -179,9 +159,7 @@ const exportAsGIF = () => {
           delay: projectState.animationSettings.frameDelay,
         });
 
-        console.log(
-          `フレーム ${index + 1}/${projectState.transparentImages.length} 追加完了`
-        );
+        console.log(`フレーム ${index + 1}/${projectState.transparentImages.length} 追加完了`);
       } catch (frameError) {
         console.error(`フレーム ${index + 1} の処理でエラー:`, frameError);
         throw frameError;
@@ -223,7 +201,7 @@ const exportAsGIF = () => {
     const timeout = setTimeout(() => {
       console.error("GIF生成がタイムアウトしました");
       showError(
-        "GIF生成に時間がかかりすぎています。画像サイズを小さくするか、フレーム数を減らしてください。"
+        "GIF生成に時間がかかりすぎています。画像サイズを小さくするか、フレーム数を減らしてください。",
       );
     }, 30000);
 

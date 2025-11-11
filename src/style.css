@@ -1,54 +1,54 @@
 /* リセットとベーススタイル */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.6;
-  color: #333;
   background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* アプリケーション全体 */
 .app {
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: white;
-  min-height: 100vh;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  padding: 20px;
+  max-width: 1200px;
+  min-height: 100vh;
 }
 
 /* ヘッダー */
 .app__header {
-  text-align: center;
   margin-bottom: 40px;
-  padding-bottom: 20px;
   border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 20px;
+  text-align: center;
 }
 
 .app__title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1da1f2;
   margin-bottom: 10px;
+  color: #1da1f2;
+  font-weight: 700;
+  font-size: 2rem;
 }
 
 .app__description {
-  font-size: 1rem;
   color: #666;
+  font-size: 1rem;
 }
 
 /* メインコンテンツ */
 .app__main {
   display: grid;
   grid-template-columns: 300px 1fr 280px;
-  gap: 30px;
   align-items: start;
+  gap: 30px;
 }
 
 /* アップロードセクション */
@@ -65,13 +65,13 @@ body {
 }
 
 .upload-area__dropzone {
-  border: 3px dashed #ccc;
-  border-radius: 12px;
-  padding: 30px 20px;
-  text-align: center;
-  background-color: #fafafa;
   transition: all 0.3s ease;
   cursor: pointer;
+  border: 3px dashed #ccc;
+  border-radius: 12px;
+  background-color: #fafafa;
+  padding: 30px 20px;
+  text-align: center;
 }
 
 .upload-area__dropzone:hover {
@@ -80,39 +80,39 @@ body {
 }
 
 .upload-area__dropzone--dragover {
+  transform: scale(1.02);
   border-color: #1da1f2;
   background-color: #e6f3ff;
-  transform: scale(1.02);
 }
 
 .upload-area__icon {
-  font-size: 3rem;
   margin-bottom: 15px;
+  font-size: 3rem;
 }
 
 .upload-area__text {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
   margin-bottom: 5px;
+  color: #333;
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .upload-area__subtext {
-  font-size: 0.9rem;
-  color: #666;
   margin-bottom: 15px;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 .upload-area__button {
-  background-color: #1da1f2;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
   transition: background-color 0.3s ease;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background-color: #1da1f2;
+  padding: 12px 24px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 .upload-area__button:hover {
@@ -129,26 +129,26 @@ body {
 
 .preview-container {
   position: relative;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #fafafa;
   width: 100%;
   max-width: 700px;
   min-height: 400px;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
   overflow: hidden;
-  background-color: #fafafa;
 }
 
 .preview-canvas {
+  display: none;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  display: none;
 }
 
 .preview-placeholder {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
   color: #999;
@@ -159,21 +159,21 @@ body {
 /* バウンディングボックス */
 .bounding-box {
   position: absolute;
+  cursor: move;
   border: 2px dashed #1da1f2;
   background-color: rgba(29, 161, 242, 0.1);
-  cursor: move;
   user-select: none;
 }
 
 .bounding-box__handle {
   position: absolute;
-  width: 12px;
-  height: 12px;
-  background-color: #1da1f2;
+  z-index: 10;
+  cursor: pointer;
   border: 2px solid white;
   border-radius: 50%;
-  cursor: pointer;
-  z-index: 10;
+  background-color: #1da1f2;
+  width: 12px;
+  height: 12px;
 }
 
 .bounding-box__handle--nw {
@@ -195,8 +195,8 @@ body {
 }
 
 .bounding-box__handle--se {
-  bottom: -6px;
   right: -6px;
+  bottom: -6px;
   cursor: se-resize;
 }
 
@@ -207,10 +207,10 @@ body {
 
 .bounding-box__border--top,
 .bounding-box__border--bottom {
-  left: 0;
   right: 0;
-  height: 4px;
+  left: 0;
   cursor: ns-resize;
+  height: 4px;
 }
 
 .bounding-box__border--top {
@@ -225,8 +225,8 @@ body {
 .bounding-box__border--right {
   top: 0;
   bottom: 0;
-  width: 4px;
   cursor: ew-resize;
+  width: 4px;
 }
 
 .bounding-box__border--left {
@@ -238,8 +238,8 @@ body {
 }
 
 .bounding-box__handle:hover {
-  background-color: #1991db;
   transform: scale(1.2);
+  background-color: #1991db;
 }
 
 .bounding-box:hover {
@@ -250,18 +250,18 @@ body {
 /* トリミング枠 */
 .crop-box {
   position: absolute;
+  z-index: 5;
+  cursor: move;
   border: 2px solid #ff6b35;
   background-color: transparent;
-  cursor: move;
   user-select: none;
-  z-index: 5;
 }
 
 .crop-box__handle {
   position: absolute;
-  background-color: #ff6b35;
-  border: 2px solid white;
   z-index: 10;
+  border: 2px solid white;
+  background-color: #ff6b35;
 }
 
 /* 角のハンドル */
@@ -269,9 +269,9 @@ body {
 .crop-box__handle--ne,
 .crop-box__handle--sw,
 .crop-box__handle--se {
+  border-radius: 50%;
   width: 12px;
   height: 12px;
-  border-radius: 50%;
 }
 
 .crop-box__handle--nw {
@@ -293,8 +293,8 @@ body {
 }
 
 .crop-box__handle--se {
-  bottom: -6px;
   right: -6px;
+  bottom: -6px;
   cursor: se-resize;
 }
 
@@ -302,11 +302,11 @@ body {
 .crop-box__handle--n,
 .crop-box__handle--s {
   left: 50%;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+  border-radius: 4px;
   width: 12px;
   height: 8px;
-  transform: translateX(-50%);
-  border-radius: 4px;
-  cursor: ns-resize;
 }
 
 .crop-box__handle--n {
@@ -320,11 +320,11 @@ body {
 .crop-box__handle--e,
 .crop-box__handle--w {
   top: 50%;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+  border-radius: 4px;
   width: 8px;
   height: 12px;
-  transform: translateY(-50%);
-  border-radius: 4px;
-  cursor: ew-resize;
 }
 
 .crop-box__handle--e {
@@ -344,35 +344,35 @@ body {
 
 .crop-box__overlay--top {
   top: -1000px;
-  left: -1000px;
   right: -1000px;
   bottom: 100%;
+  left: -1000px;
 }
 
 .crop-box__overlay--bottom {
   top: 100%;
-  left: -1000px;
   right: -1000px;
   bottom: -1000px;
+  left: -1000px;
 }
 
 .crop-box__overlay--left {
   top: 0;
-  left: -1000px;
   right: 100%;
   bottom: 0;
+  left: -1000px;
 }
 
 .crop-box__overlay--right {
   top: 0;
-  left: 100%;
   right: -1000px;
   bottom: 0;
+  left: 100%;
 }
 
 .crop-box__handle:hover {
-  background-color: #e55a2b;
   transform: scale(1.2);
+  background-color: #e55a2b;
 }
 
 .crop-box:hover {
@@ -386,10 +386,10 @@ body {
 }
 
 .control-panel {
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  padding: 25px;
   border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  padding: 25px;
 }
 
 .control-group {
@@ -401,12 +401,12 @@ body {
 }
 
 .control-group__title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
   margin-bottom: 15px;
-  padding-bottom: 8px;
   border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 8px;
+  color: #333;
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .control-item {
@@ -421,21 +421,21 @@ body {
 }
 
 .control-item__label {
-  font-weight: 500;
-  color: #555;
   min-width: 50px;
+  color: #555;
+  font-weight: 500;
 }
 
 .control-item__input,
 .control-item__select {
   flex: 1;
-  padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 1rem;
   background-color: white;
-  max-width: 120px;
+  padding: 8px 12px;
   min-width: 60px;
+  max-width: 120px;
+  font-size: 1rem;
 }
 
 /* 数値入力フィールド専用スタイル */
@@ -447,65 +447,65 @@ body {
 /* スライダー専用スタイル */
 .control-item__slider {
   flex: 1;
-  height: 6px;
+  -webkit-appearance: none;
+  outline: none;
   border-radius: 3px;
   background: #ddd;
-  outline: none;
-  -webkit-appearance: none;
+  height: 6px;
 }
 
 .control-item__slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid white;
   border-radius: 50%;
   background: #1da1f2;
-  cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 20px;
+  height: 20px;
 }
 
 .control-item__slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid white;
   border-radius: 50%;
   background: #1da1f2;
-  cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 20px;
+  height: 20px;
 }
 
 /* 説明文のスタイル */
 .control-item__description {
+  margin-top: 5px;
   color: #666;
   font-size: 0.85rem;
   line-height: 1.3;
-  margin-top: 5px;
 }
 
 .control-item__input:focus,
 .control-item__select:focus {
   outline: none;
-  border-color: #1da1f2;
   box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+  border-color: #1da1f2;
 }
 
 .control-item__unit {
-  font-size: 0.9rem;
-  color: #666;
   min-width: 30px;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 .control-item__button {
-  width: 100%;
-  padding: 12px 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
   border: none;
   border-radius: 6px;
-  font-size: 1rem;
+  padding: 12px 20px;
+  width: 100%;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  font-size: 1rem;
 }
 
 .control-item__button--primary {
@@ -545,9 +545,9 @@ body {
 }
 
 .control-item__button:disabled {
+  cursor: not-allowed;
   background-color: #ccc;
   color: #999;
-  cursor: not-allowed;
 }
 
 /* エラーメッセージ */
@@ -555,15 +555,15 @@ body {
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: #ff4757;
-  color: white;
-  padding: 15px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
   z-index: 1000;
-  max-width: 400px;
   animation: slideIn 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+  border-radius: 8px;
+  background-color: #ff4757;
+  padding: 15px 20px;
+  max-width: 400px;
+  color: white;
+  font-weight: 600;
 }
 
 @keyframes slideIn {

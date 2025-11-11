@@ -39,13 +39,7 @@ const setBoundingBoxSelected = (selected) => {
 };
 const isBoundingBoxActive = () => isBoundingBoxSelected;
 
-const calculateTransparentImagePosition = (
-  transparentImg,
-  scale,
-  pos,
-  bg,
-  cropArea = null
-) => {
+const calculateTransparentImagePosition = (transparentImg, scale, pos, bg, cropArea = null) => {
   const scaledWidth = transparentImg.metadata.width * scale;
   const scaledHeight = transparentImg.metadata.height * scale;
   const baseX = pos.x + (bg.metadata.width - scaledWidth) / 2;
@@ -107,13 +101,7 @@ const renderCropModePreview = () => {
     });
 
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(
-      transparentImg.image,
-      absoluteX,
-      absoluteY,
-      scaledWidth,
-      scaledHeight
-    );
+    ctx.drawImage(transparentImg.image, absoluteX, absoluteY, scaledWidth, scaledHeight);
   }
 };
 
@@ -122,9 +110,7 @@ const updateExportButtons = () => {
   const hasTransparent = projectState.transparentImages.length > 0;
 
   exportPngButton.disabled = !hasBackground;
-  exportGifButton.disabled = !(
-    hasBackground && projectState.transparentImages.length > 1
-  );
+  exportGifButton.disabled = !(hasBackground && projectState.transparentImages.length > 1);
 };
 
 const updatePreview = () => {
@@ -178,7 +164,7 @@ const updatePreview = () => {
           0,
           0,
           previewCanvas.width,
-          previewCanvas.height
+          previewCanvas.height,
         );
       } else {
         ctx.drawImage(bg.image, 0, 0);
@@ -188,34 +174,18 @@ const updatePreview = () => {
       if (currentFrame) {
         const scale = projectState.transformState.scale;
         const pos = projectState.transformState.position;
-        const imagePos = calculateTransparentImagePosition(
-          currentFrame,
-          scale,
-          pos,
-          bg,
-          cropArea
-        );
+        const imagePos = calculateTransparentImagePosition(currentFrame, scale, pos, bg, cropArea);
 
         ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(
-          currentFrame.image,
-          imagePos.x,
-          imagePos.y,
-          imagePos.width,
-          imagePos.height
-        );
+        ctx.drawImage(currentFrame.image, imagePos.x, imagePos.y, imagePos.width, imagePos.height);
       }
 
-      currentFrameIndex =
-        (currentFrameIndex + 1) % projectState.transparentImages.length;
+      currentFrameIndex = (currentFrameIndex + 1) % projectState.transparentImages.length;
     };
 
     renderFrame();
 
-    animationInterval = setInterval(
-      renderFrame,
-      projectState.animationSettings.frameDelay
-    );
+    animationInterval = setInterval(renderFrame, projectState.animationSettings.frameDelay);
   } else if (projectState.transparentImages.length === 1) {
     ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
 
@@ -229,7 +199,7 @@ const updatePreview = () => {
         0,
         0,
         previewCanvas.width,
-        previewCanvas.height
+        previewCanvas.height,
       );
     } else {
       ctx.drawImage(bg.image, 0, 0);
@@ -238,22 +208,10 @@ const updatePreview = () => {
     const transparentImg = projectState.transparentImages[0];
     const scale = projectState.transformState.scale;
     const pos = projectState.transformState.position;
-    const imagePos = calculateTransparentImagePosition(
-      transparentImg,
-      scale,
-      pos,
-      bg,
-      cropArea
-    );
+    const imagePos = calculateTransparentImagePosition(transparentImg, scale, pos, bg, cropArea);
 
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(
-      transparentImg.image,
-      imagePos.x,
-      imagePos.y,
-      imagePos.width,
-      imagePos.height
-    );
+    ctx.drawImage(transparentImg.image, imagePos.x, imagePos.y, imagePos.width, imagePos.height);
   } else {
     ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
 
@@ -267,7 +225,7 @@ const updatePreview = () => {
         0,
         0,
         previewCanvas.width,
-        previewCanvas.height
+        previewCanvas.height,
       );
     } else {
       ctx.drawImage(bg.image, 0, 0);
@@ -321,13 +279,7 @@ const updateBoundingBox = () => {
 
   const canvasRect = previewCanvas.getBoundingClientRect();
 
-  const imagePos = calculateTransparentImagePosition(
-    transparentImg,
-    scale,
-    pos,
-    bg,
-    cropArea
-  );
+  const imagePos = calculateTransparentImagePosition(transparentImg, scale, pos, bg, cropArea);
 
   const scaleFactor = (() => {
     if (cropArea) {
@@ -352,11 +304,9 @@ const updateBoundingBox = () => {
   const displayWidth = imagePos.width * scaleFactor;
   const displayHeight = imagePos.height * scaleFactor;
 
-  const containerRect = previewCanvas.getBoundingClientRect();
-
   boundingBox.style.display = "block";
-  boundingBox.style.left = containerRect.left + displayX + "px";
-  boundingBox.style.top = containerRect.top + displayY + "px";
+  boundingBox.style.left = displayX + "px";
+  boundingBox.style.top = displayY + "px";
   boundingBox.style.width = displayWidth + "px";
   boundingBox.style.height = displayHeight + "px";
 };
@@ -374,8 +324,7 @@ const getAspectRatio = (ratio) => {
     case "original":
     default:
       return projectState.backgroundImage
-        ? projectState.backgroundImage.metadata.width /
-            projectState.backgroundImage.metadata.height
+        ? projectState.backgroundImage.metadata.width / projectState.backgroundImage.metadata.height
         : 1;
   }
 };
@@ -407,9 +356,7 @@ const updateCropBox = () => {
         height: bg.metadata.height,
       };
     } else {
-      const targetRatio = getAspectRatio(
-        projectState.transformState.aspectRatio
-      );
+      const targetRatio = getAspectRatio(projectState.transformState.aspectRatio);
       const bgRatio = bg.metadata.width / bg.metadata.height;
 
       let cropWidth;
@@ -438,10 +385,8 @@ const updateCropBox = () => {
   const displayWidth = cropArea.width * actualScale;
   const displayHeight = cropArea.height * actualScale;
 
-  const canvasOffsetX =
-    (canvasRect.width - bg.metadata.width * actualScale) / 2;
-  const canvasOffsetY =
-    (canvasRect.height - bg.metadata.height * actualScale) / 2;
+  const canvasOffsetX = (canvasRect.width - bg.metadata.width * actualScale) / 2;
+  const canvasOffsetY = (canvasRect.height - bg.metadata.height * actualScale) / 2;
 
   cropBox.style.display = "block";
   cropBox.style.left = displayX + canvasOffsetX + "px";

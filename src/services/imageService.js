@@ -2,19 +2,11 @@ import { GifReader } from "omggif";
 import { parseGIF, decompressFrames } from "gifuct-js";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const IMAGE_TYPES = [
-  "image/png",
-  "image/jpeg",
-  "image/jpg",
-  "image/gif",
-  "image/webp",
-];
+const IMAGE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"];
 
 const validateImageFile = (file, { onInvalid } = {}) => {
   if (!IMAGE_TYPES.includes(file.type)) {
-    onInvalid?.(
-      "対応していないファイル形式です。PNG、JPEG、GIF、WebPファイルを選択してください。"
-    );
+    onInvalid?.("対応していないファイル形式です。PNG、JPEG、GIF、WebPファイルを選択してください。");
     return false;
   }
 
@@ -70,12 +62,7 @@ const extractGifFrames = async (file, { fullFrame = true } = {}) => {
   return parseGifFrames(arrayBuffer);
 };
 
-const assembleFullFrames = async (
-  frames,
-  gifWidth,
-  gifHeight,
-  backgroundColor = null
-) => {
+const assembleFullFrames = async (frames, gifWidth, gifHeight, backgroundColor = null) => {
   const canvas = document.createElement("canvas");
   canvas.width = gifWidth;
   canvas.height = gifHeight;
@@ -101,11 +88,7 @@ const assembleFullFrames = async (
     const patchW = frame.dims.width;
     const patchH = frame.dims.height;
     if (patchW > 0 && patchH > 0) {
-      const imageData = new ImageData(
-        new Uint8ClampedArray(frame.patch),
-        patchW,
-        patchH
-      );
+      const imageData = new ImageData(new Uint8ClampedArray(frame.patch), patchW, patchH);
 
       if (window.createImageBitmap) {
         const bitmap = await createImageBitmap(imageData);
@@ -161,12 +144,7 @@ const assembleFullFrames = async (
 const decodeGif = async (arrayBuffer) => {
   const gif = parseGIF(arrayBuffer);
   const frames = decompressFrames(gif, true);
-  const fullFrames = await assembleFullFrames(
-    frames,
-    gif.lsd.width,
-    gif.lsd.height,
-    null
-  );
+  const fullFrames = await assembleFullFrames(frames, gif.lsd.width, gif.lsd.height, null);
 
   return fullFrames.map((frame) => ({
     image: frame.image,
@@ -254,10 +232,4 @@ const parseGifFramesFallback = async (arrayBuffer) => {
   }
 };
 
-export {
-  validateImageFile,
-  isGifFile,
-  loadImage,
-  createImageData,
-  extractGifFrames,
-};
+export { validateImageFile, isGifFile, loadImage, createImageData, extractGifFrames };
