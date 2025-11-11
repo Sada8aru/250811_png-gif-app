@@ -485,6 +485,7 @@ export {
   showBoundingBoxTemporarily,
   updateBoundingBox,
   updateCropBox,
+  getAspectRatio,
   setCropMode,
   toggleCropMode,
   isCropModeEnabled,

@@ -8,6 +8,7 @@ import {
   calculateTransparentImagePosition,
   isCropModeEnabled,
   setBoundingBoxSelected,
+  getAspectRatio,
 } from "../render/previewRenderer";
 
 let previewCanvas;
@@ -25,6 +26,181 @@ let isCropResizing = false;
 let cropResizeHandle = null;
 let cropOriginalBounds = null;
 let cropAccumulatedDelta = { x: 0, y: 0 };
+
+const MIN_CROP_SIZE = 50;
+
+const clamp = (value, min, max) => {
+  let result = value;
+  if (typeof min === "number") {
+    result = Math.max(min, result);
+  }
+  if (typeof max === "number") {
+    result = Math.min(max, result);
+  }
+  return result;
+};
+
+const getHandleType = (handleClass = "") => {
+  if (handleClass.includes("--nw")) return "nw";
+  if (handleClass.includes("--ne")) return "ne";
+  if (handleClass.includes("--sw")) return "sw";
+  if (handleClass.includes("--se")) return "se";
+  if (handleClass.includes("--n")) return "north";
+  if (handleClass.includes("--s")) return "south";
+  if (handleClass.includes("--w")) return "west";
+  if (handleClass.includes("--e")) return "east";
+  return null;
+};
+
+const clampSizeToLimits = (width, height, ratio, maxWidth, maxHeight) => {
+  let nextWidth = Math.max(MIN_CROP_SIZE, width);
+  let nextHeight = Math.max(MIN_CROP_SIZE, height);
+
+  if (typeof maxWidth === "number" && nextWidth > maxWidth) {
+    nextWidth = maxWidth;
+    nextHeight = nextWidth / ratio;
+  }
+
+  if (typeof maxHeight === "number" && nextHeight > maxHeight) {
+    nextHeight = maxHeight;
+    nextWidth = nextHeight * ratio;
+
+    if (typeof maxWidth === "number" && nextWidth > maxWidth) {
+      nextWidth = maxWidth;
+      nextHeight = nextWidth / ratio;
+    }
+  }
+
+  nextWidth = Math.max(MIN_CROP_SIZE, nextWidth);
+  nextHeight = Math.max(MIN_CROP_SIZE, nextHeight);
+
+  return { width: nextWidth, height: nextHeight };
+};
+
+const getMaxDimensionsForHandle = (handleType, prevArea, imageWidth, imageHeight) => {
+  const right = prevArea.x + prevArea.width;
+  const bottom = prevArea.y + prevArea.height;
+  const centerX = prevArea.x + prevArea.width / 2;
+  const centerY = prevArea.y + prevArea.height / 2;
+
+  switch (handleType) {
+    case "nw":
+      return { maxWidth: right, maxHeight: bottom };
+    case "ne":
+      return { maxWidth: imageWidth - prevArea.x, maxHeight: bottom };
+    case "sw":
+      return { maxWidth: right, maxHeight: imageHeight - prevArea.y };
+    case "se":
+      return { maxWidth: imageWidth - prevArea.x, maxHeight: imageHeight - prevArea.y };
+    case "north":
+      return {
+        maxWidth: 2 * Math.min(centerX, imageWidth - centerX),
+        maxHeight: bottom,
+      };
+    case "south":
+      return {
+        maxWidth: 2 * Math.min(centerX, imageWidth - centerX),
+        maxHeight: imageHeight - prevArea.y,
+      };
+    case "west":
+      return {
+        maxWidth: right,
+        maxHeight: 2 * Math.min(centerY, imageHeight - centerY),
+      };
+    case "east":
+      return {
+        maxWidth: imageWidth - prevArea.x,
+        maxHeight: 2 * Math.min(centerY, imageHeight - centerY),
+      };
+    default:
+      return { maxWidth: undefined, maxHeight: undefined };
+  }
+};
+
+const positionCropAreaByHandle = (handleType, width, height, prevArea) => {
+  const right = prevArea.x + prevArea.width;
+  const bottom = prevArea.y + prevArea.height;
+  const centerX = prevArea.x + prevArea.width / 2;
+  const centerY = prevArea.y + prevArea.height / 2;
+
+  switch (handleType) {
+    case "nw":
+      return { x: right - width, y: bottom - height };
+    case "ne":
+      return { x: prevArea.x, y: bottom - height };
+    case "sw":
+      return { x: right - width, y: prevArea.y };
+    case "se":
+      return { x: prevArea.x, y: prevArea.y };
+    case "north":
+      return { x: centerX - width / 2, y: bottom - height };
+    case "south":
+      return { x: centerX - width / 2, y: prevArea.y };
+    case "west":
+      return { x: right - width, y: centerY - height / 2 };
+    case "east":
+      return { x: prevArea.x, y: centerY - height / 2 };
+    default:
+      return { x: prevArea.x, y: prevArea.y };
+  }
+};
+
+const enforceCropAspectRatio = (
+  handleClass,
+  prevArea,
+  cropArea,
+  resizeX,
+  resizeY,
+  imageWidth,
+  imageHeight,
+) => {
+  const ratioKey = projectState.transformState.aspectRatio;
+  if (!ratioKey || ratioKey === "free") return;
+
+  const targetRatio = getAspectRatio(ratioKey);
+  if (!targetRatio) return;
+
+  const handleType = getHandleType(handleClass);
+  if (!handleType) return;
+
+  const isCornerHandle = ["nw", "ne", "sw", "se"].includes(handleType);
+  let width = cropArea.width;
+  let height = cropArea.height;
+
+  if (isCornerHandle) {
+    const preferWidth = Math.abs(resizeX) >= Math.abs(resizeY);
+    if (preferWidth) {
+      width = Math.max(MIN_CROP_SIZE, cropArea.width);
+      height = width / targetRatio;
+    } else {
+      height = Math.max(MIN_CROP_SIZE, cropArea.height);
+      width = height * targetRatio;
+    }
+  } else if (handleType === "north" || handleType === "south") {
+    height = Math.max(MIN_CROP_SIZE, cropArea.height);
+    width = height * targetRatio;
+  } else if (handleType === "east" || handleType === "west") {
+    width = Math.max(MIN_CROP_SIZE, cropArea.width);
+    height = width / targetRatio;
+  } else {
+    return;
+  }
+
+  const { maxWidth, maxHeight } = getMaxDimensionsForHandle(
+    handleType,
+    prevArea,
+    imageWidth,
+    imageHeight,
+  );
+
+  const size = clampSizeToLimits(width, height, targetRatio, maxWidth, maxHeight);
+  const position = positionCropAreaByHandle(handleType, size.width, size.height, prevArea);
+
+  cropArea.x = clamp(position.x, 0, imageWidth - size.width);
+  cropArea.y = clamp(position.y, 0, imageHeight - size.height);
+  cropArea.width = size.width;
+  cropArea.height = size.height;
+};
 
 const initInteractionDomRefs = () => {
   const refs = getDomRefs();
@@ -215,6 +391,7 @@ const handleCropDrag = (e) => {
     const resizeY = deltaY / actualScale;
 
     const handleClass = cropResizeHandle.className;
+    const prevArea = { ...cropArea };
 
     if (handleClass.includes("--nw")) {
       cropArea.x = Math.max(0, cropArea.x + resizeX);
@@ -243,6 +420,16 @@ const handleCropDrag = (e) => {
     } else if (handleClass.includes("--e")) {
       cropArea.width = Math.max(50, cropArea.width + resizeX);
     }
+
+    enforceCropAspectRatio(
+      handleClass,
+      prevArea,
+      cropArea,
+      resizeX,
+      resizeY,
+      bg.metadata.width,
+      bg.metadata.height,
+    );
 
     updateCropBox();
   }
