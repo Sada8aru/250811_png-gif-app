@@ -304,11 +304,21 @@ body {
 .crop-box__handle--n,
 .crop-box__handle--s {
   left: 50%;
-  transform: translateX(-50%);
+  transform-origin: center;
+  translate: -50% 0;
   cursor: ns-resize;
   border-radius: 4px;
   width: 12px;
   height: 8px;
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 20px;
+    height: 20px;
+    content: "";
+  }
 }
 
 .crop-box__handle--n {
@@ -322,11 +332,20 @@ body {
 .crop-box__handle--e,
 .crop-box__handle--w {
   top: 50%;
-  transform: translateY(-50%);
+  translate: 0 -50%;
   cursor: ew-resize;
   border-radius: 4px;
   width: 8px;
   height: 12px;
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 20px;
+    height: 20px;
+    content: "";
+  }
 }
 
 .crop-box__handle--e {
