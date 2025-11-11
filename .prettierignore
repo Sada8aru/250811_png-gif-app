@@ -1,0 +1,8 @@
+node_modules
+docs
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+openspec
+gif.worker.js
