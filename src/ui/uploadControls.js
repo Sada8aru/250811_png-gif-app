@@ -11,7 +11,7 @@ import {
 import {
   updatePreview,
   updateExportButtons,
-  toggleCropMode,
+  setCropMode,
   isCropModeEnabled,
   updateBoundingBox,
   setBoundingBoxSelected,
@@ -154,7 +154,7 @@ const handleBackgroundImageUpload = async (file) => {
     aspectRatioSelect.value = "original";
 
     if (isCropModeEnabled()) {
-      toggleCropMode();
+      setCropMode(false);
     }
 
     updateDropzoneStatus(backgroundDropzone, {

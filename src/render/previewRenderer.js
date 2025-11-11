@@ -5,7 +5,8 @@ let previewCanvas;
 let previewPlaceholder;
 let boundingBox;
 let cropBox;
-let cropModeToggle;
+let modeToggleEditButton;
+let modeToggleCropButton;
 let cropControls;
 let exportPngButton;
 let exportGifButton;
@@ -16,10 +17,12 @@ const initRendererDomRefs = () => {
   previewPlaceholder = refs.previewPlaceholder;
   boundingBox = refs.boundingBox;
   cropBox = refs.cropBox;
-  cropModeToggle = refs.cropModeToggle;
+  modeToggleEditButton = refs.modeToggleEdit;
+  modeToggleCropButton = refs.modeToggleCrop;
   cropControls = refs.cropControls;
   exportPngButton = refs.exportPngButton;
   exportGifButton = refs.exportGifButton;
+  updateModeToggleAppearance();
 };
 
 let animationInterval = null;
@@ -38,6 +41,22 @@ const setBoundingBoxSelected = (selected) => {
   isBoundingBoxSelected = selected;
 };
 const isBoundingBoxActive = () => isBoundingBoxSelected;
+
+const updateModeToggleAppearance = () => {
+  if (!modeToggleEditButton || !modeToggleCropButton) return;
+
+  if (isCropMode) {
+    modeToggleCropButton.classList.add("mode-toggle__button--active");
+    modeToggleCropButton.setAttribute("aria-pressed", "true");
+    modeToggleEditButton.classList.remove("mode-toggle__button--active");
+    modeToggleEditButton.setAttribute("aria-pressed", "false");
+  } else {
+    modeToggleEditButton.classList.add("mode-toggle__button--active");
+    modeToggleEditButton.setAttribute("aria-pressed", "true");
+    modeToggleCropButton.classList.remove("mode-toggle__button--active");
+    modeToggleCropButton.setAttribute("aria-pressed", "false");
+  }
+};
 
 const calculateTransparentImagePosition = (
   transparentImg,
@@ -407,12 +426,21 @@ const updateCropBox = () => {
   cropBox.style.height = displayHeight + "px";
 };
 
-const toggleCropMode = () => {
-  isCropMode = !isCropMode;
+/**
+ * 操作モードを切り替える。
+ * @param {boolean} shouldEnableCrop トリミングモードを有効にする場合はtrue
+ */
+const setCropMode = (shouldEnableCrop) => {
+  const nextState = Boolean(shouldEnableCrop);
+
+  if (isCropMode === nextState) {
+    updateModeToggleAppearance();
+    return;
+  }
+
+  isCropMode = nextState;
 
   if (isCropMode) {
-    cropModeToggle.textContent = "✏️ 編集モード";
-    cropModeToggle.classList.add("active");
     cropControls.style.display = "block";
 
     boundingBox.style.display = "none";
@@ -427,8 +455,6 @@ const toggleCropMode = () => {
 
     updateCropBox();
   } else {
-    cropModeToggle.textContent = "📐 トリミングモード";
-    cropModeToggle.classList.remove("active");
     cropControls.style.display = "none";
 
     cropBox.style.display = "none";
@@ -437,6 +463,15 @@ const toggleCropMode = () => {
     updateBoundingBox();
     updatePreview();
   }
+
+  updateModeToggleAppearance();
+};
+
+/**
+ * トグル操作用のヘルパー。
+ */
+const toggleCropMode = () => {
+  setCropMode(!isCropMode);
 };
 
 const isCropModeEnabled = () => isCropMode;
@@ -450,6 +485,7 @@ export {
   showBoundingBoxTemporarily,
   updateBoundingBox,
   updateCropBox,
+  setCropMode,
   toggleCropMode,
   isCropModeEnabled,
   setBoundingBoxSelected,

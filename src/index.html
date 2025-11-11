@@ -143,14 +143,27 @@
 
             <div class="control-group">
               <h3 class="control-group__title">操作モード</h3>
-              <div class="control-item">
-                <button
-                  id="cropModeToggle"
-                  class="control-item__button control-item__button--mode"
-                  type="button"
-                >
-                  📐 トリミングモード
-                </button>
+              <div class="control-item control-item__mode-toggle">
+                <div class="mode-toggle" role="group" aria-label="操作モード">
+                  <button
+                    id="modeToggleEdit"
+                    class="mode-toggle__button mode-toggle__button--active"
+                    type="button"
+                    aria-pressed="true"
+                    data-mode="edit"
+                  >
+                    ✏️ 編集
+                  </button>
+                  <button
+                    id="modeToggleCrop"
+                    class="mode-toggle__button"
+                    type="button"
+                    aria-pressed="false"
+                    data-mode="crop"
+                  >
+                    背景トリミング
+                  </button>
+                </div>
               </div>
             </div>
 

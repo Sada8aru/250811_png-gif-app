@@ -4,13 +4,14 @@ import { showError } from "./notifications";
 import {
   updatePreview,
   showBoundingBoxTemporarily,
-  toggleCropMode,
   updateCropBox,
   isCropModeEnabled,
+  setCropMode,
 } from "../render/previewRenderer";
 
 let scaleInput;
-let cropModeToggle;
+let modeToggleEdit;
+let modeToggleCrop;
 let animationSpeedInput;
 let animationSpeedValue;
 let aspectRatioSelect;
@@ -18,7 +19,8 @@ let aspectRatioSelect;
 const initControlDomRefs = () => {
   const refs = getDomRefs();
   scaleInput = refs.scaleInput;
-  cropModeToggle = refs.cropModeToggle;
+  modeToggleEdit = refs.modeToggleEdit;
+  modeToggleCrop = refs.modeToggleCrop;
   animationSpeedInput = refs.animationSpeedInput;
   animationSpeedValue = refs.animationSpeedValue;
   aspectRatioSelect = refs.aspectRatioSelect;
@@ -61,8 +63,12 @@ const setupControls = () => {
     }
   });
 
-  cropModeToggle.addEventListener("click", () => {
-    toggleCropMode();
+  modeToggleEdit.addEventListener("click", () => {
+    setCropMode(false);
+  });
+
+  modeToggleCrop.addEventListener("click", () => {
+    setCropMode(true);
   });
 
   animationSpeedInput.addEventListener("input", (e) => {

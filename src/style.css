@@ -19,7 +19,7 @@ body {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   background-color: white;
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1400px;
   min-height: 100vh;
 }
 
@@ -46,7 +46,7 @@ body {
 /* メインコンテンツ */
 .app__main {
   display: grid;
-  grid-template-columns: 300px 1fr 280px;
+  grid-template-columns: 300px 1fr 300px;
   align-items: start;
   gap: 30px;
 }
@@ -391,11 +391,11 @@ body {
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   background-color: #f9f9f9;
-  padding: 25px;
+  padding: 16px;
 }
 
 .control-group {
-  margin-bottom: 25px;
+  margin-bottom: 16px;
 }
 
 .control-group:last-child {
@@ -527,22 +527,49 @@ body {
   background-color: #14a85a;
 }
 
-.control-item__button--mode {
-  background-color: #6c757d;
-  color: white;
+.control-item__mode-toggle {
+  width: 100%;
 }
 
-.control-item__button--mode:hover:not(:disabled) {
-  background-color: #5a6268;
+.mode-toggle {
+  display: flex;
+  gap: 4px;
+  border: 1px solid #dce2e8;
+  border-radius: 6px;
+  background-color: #f8fafc;
+  width: 100%;
 }
 
-.control-item__button--mode.active {
-  background-color: #ff6b35;
-  color: white;
+.mode-toggle__button {
+  flex: 1;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  padding: 10px 12px;
+  color: #47505b;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
-.control-item__button--mode.active:hover {
-  background-color: #e55a2b;
+.mode-toggle__button:focus-visible {
+  outline: 2px solid rgb(29 161 242 / 0.2);
+  outline-offset: 2px;
+}
+
+.mode-toggle__button:hover {
+  background-color: #e5e5e5;
+}
+
+.mode-toggle__button--active:hover {
+  cursor: auto;
+  background-color: #1991db;
+}
+
+.mode-toggle__button--active {
+  background-color: #1991db;
+  color: #fff;
 }
 
 .control-item__button:disabled {
@@ -580,7 +607,7 @@ body {
 }
 
 /* レスポンシブデザイン */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .app__main {
     grid-template-columns: 1fr;
     gap: 30px;
