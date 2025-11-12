@@ -7,6 +7,7 @@ import {
   updateCropBox,
   isCropModeEnabled,
   setCropMode,
+  alignTransparentLayer,
 } from "../render/previewRenderer";
 
 let scaleInput;
@@ -15,6 +16,7 @@ let modeToggleCrop;
 let animationSpeedInput;
 let animationSpeedValue;
 let aspectRatioSelect;
+let alignmentButtons = [];
 
 const initControlDomRefs = () => {
   const refs = getDomRefs();
@@ -24,6 +26,7 @@ const initControlDomRefs = () => {
   animationSpeedInput = refs.animationSpeedInput;
   animationSpeedValue = refs.animationSpeedValue;
   aspectRatioSelect = refs.aspectRatioSelect;
+  alignmentButtons = Array.from(refs.alignmentButtons ?? []);
 };
 
 const checkScaleWarning = () => {
@@ -93,6 +96,15 @@ const setupControls = () => {
     } else {
       updatePreview();
     }
+  });
+
+  alignmentButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const alignmentKey = button.getAttribute("data-align-target");
+      if (!alignmentKey) return;
+      console.log("整列ボタン押下:", alignmentKey);
+      alignTransparentLayer(alignmentKey);
+    });
   });
 };
 

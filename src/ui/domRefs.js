@@ -20,6 +20,7 @@ const queryDomRefs = () => ({
   exportPngButton: document.getElementById("exportPngButton"),
   exportGifButton: document.getElementById("exportGifButton"),
   errorMessage: document.getElementById("errorMessage"),
+  alignmentButtons: document.querySelectorAll("[data-align-target]"),
 });
 
 let domRefs;

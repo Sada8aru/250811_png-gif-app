@@ -291,6 +291,83 @@ const showBoundingBoxTemporarily = (duration = 1000) => {
   }, duration);
 };
 
+const alignmentMatrix = {
+  "top-left": { horizontal: "start", vertical: "start" },
+  "top-center": { horizontal: "center", vertical: "start" },
+  "top-right": { horizontal: "end", vertical: "start" },
+  "middle-left": { horizontal: "start", vertical: "center" },
+  "middle-center": { horizontal: "center", vertical: "center" },
+  "middle-right": { horizontal: "end", vertical: "center" },
+  "bottom-left": { horizontal: "start", vertical: "end" },
+  "bottom-center": { horizontal: "center", vertical: "end" },
+  "bottom-right": { horizontal: "end", vertical: "end" },
+};
+
+const clampWithinBounds = (value, size, boundsStart, boundsSize) => {
+  const min = boundsStart;
+  const max = boundsStart + boundsSize - size;
+
+  if (max < min) {
+    return boundsStart + (boundsSize - size) / 2;
+  }
+
+  return Math.min(Math.max(value, min), max);
+};
+
+const resolveAlignmentPosition = (alignment, boundsStart, boundsSize, overlaySize) => {
+  switch (alignment) {
+    case "start":
+      return boundsStart;
+    case "end":
+      return boundsStart + boundsSize - overlaySize;
+    case "center":
+    default:
+      return boundsStart + (boundsSize - overlaySize) / 2;
+  }
+};
+
+const alignTransparentLayer = (alignmentKey) => {
+  if (!alignmentMatrix[alignmentKey]) return;
+  if (!projectState.backgroundImage || projectState.transparentImages.length === 0) return;
+
+  const bg = projectState.backgroundImage;
+  const transparentImg = projectState.transparentImages[0];
+  const scale = projectState.transformState.scale;
+  const cropArea = projectState.transformState.cropArea;
+
+  const scaledWidth = transparentImg.metadata.width * scale;
+  const scaledHeight = transparentImg.metadata.height * scale;
+
+  const bounds = cropArea
+    ? { x: cropArea.x, y: cropArea.y, width: cropArea.width, height: cropArea.height }
+    : { x: 0, y: 0, width: bg.metadata.width, height: bg.metadata.height };
+
+  const targetDefinition = alignmentMatrix[alignmentKey];
+
+  const desiredX = resolveAlignmentPosition(
+    targetDefinition.horizontal,
+    bounds.x,
+    bounds.width,
+    scaledWidth,
+  );
+  const desiredY = resolveAlignmentPosition(
+    targetDefinition.vertical,
+    bounds.y,
+    bounds.height,
+    scaledHeight,
+  );
+
+  const alignedX = clampWithinBounds(desiredX, scaledWidth, bounds.x, bounds.width);
+  const alignedY = clampWithinBounds(desiredY, scaledHeight, bounds.y, bounds.height);
+
+  projectState.transformState.position.x = alignedX - (bg.metadata.width - scaledWidth) / 2;
+  projectState.transformState.position.y = alignedY - (bg.metadata.height - scaledHeight) / 2;
+
+  setBoundingBoxSelected(true);
+  updatePreview();
+  showBoundingBoxTemporarily(1200);
+};
+
 const updateBoundingBox = () => {
   if (
     !projectState.backgroundImage ||
@@ -483,6 +560,7 @@ export {
   updatePreview,
   updateExportButtons,
   showBoundingBoxTemporarily,
+  alignTransparentLayer,
   updateBoundingBox,
   updateCropBox,
   getAspectRatio,

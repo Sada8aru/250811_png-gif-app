@@ -42,22 +42,7 @@ const detectIncomingAnimationType = (files) => {
   return null;
 };
 
-const ensureHintElement = (dropzone) => {
-  let hint = dropzone.querySelector(".upload-area__hint");
-  if (!hint) {
-    hint = document.createElement("small");
-    hint.className = "upload-area__hint";
-    const button = dropzone.querySelector(".upload-area__button");
-    if (button) {
-      dropzone.insertBefore(hint, button);
-    } else {
-      dropzone.appendChild(hint);
-    }
-  }
-  return hint;
-};
-
-const updateDropzoneStatus = (dropzone, { icon, text, subtext, hint }) => {
+const updateDropzoneStatus = (dropzone, { icon, text, subtext }) => {
   const iconEl = dropzone.querySelector(".upload-area__icon");
   if (iconEl && icon) {
     iconEl.textContent = icon;
@@ -71,11 +56,6 @@ const updateDropzoneStatus = (dropzone, { icon, text, subtext, hint }) => {
   const subtextEl = dropzone.querySelector(".upload-area__subtext");
   if (subtextEl) {
     subtextEl.textContent = subtext;
-  }
-
-  if (hint) {
-    const hintEl = ensureHintElement(dropzone);
-    hintEl.textContent = hint;
   }
 };
 
@@ -161,7 +141,6 @@ const handleBackgroundImageUpload = async (file) => {
       icon: "✅",
       text: `背景画像: ${file.name}`,
       subtext: `${image.width} × ${image.height}px`,
-      hint: "「ファイルを選択」から変更できます",
     });
 
     updatePreview();
@@ -314,7 +293,6 @@ const handleTransparentImageUpload = async (files) => {
       icon: "✨",
       text: `透過画像: ${description}`,
       subtext: `総フレーム数: ${totalFrames}`,
-      hint: "「ファイルを選択」から変更できます",
     });
 
     updatePreview();

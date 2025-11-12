@@ -1,20 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>X用ポスト画像生成ツール</title>
-    <script type="module" crossorigin src="/250811_png-gif-app/assets/index-Dysw0vAm.js"></script>
-    <link rel="stylesheet" crossorigin href="/250811_png-gif-app/assets/index-CfHCio1J.css">
+    <script type="module" crossorigin src="/250811_png-gif-app/assets/index-Br34zHHt.js"></script>
+    <link rel="stylesheet" crossorigin href="/250811_png-gif-app/assets/index-CMULXwOy.css">
   </head>
 
   <body>
     <div class="app">
       <header class="app__header">
         <h1 class="app__title">X用ポスト画像生成ツール</h1>
-        <p class="app__description">
-          透過画像と背景画像を組み合わせてPNG/GIFを生成
-        </p>
       </header>
 
       <main class="app__main">
@@ -26,19 +23,10 @@
                 <div class="upload-area__icon">🖼️</div>
                 <p class="upload-area__text">背景画像をドラッグ&ドロップ</p>
                 <p class="upload-area__subtext">または</p>
-                <button
-                  class="upload-area__button"
-                  type="button"
-                  id="backgroundButton"
-                >
-                  ファイルを選択
+                <button class="upload-area__button" type="button" id="backgroundButton">
+                  <span class="upload-area__buttonStyle"> ファイルを選択 </span>
                 </button>
-                <input
-                  type="file"
-                  id="backgroundInput"
-                  accept="image/*"
-                  style="display: none"
-                />
+                <input type="file" id="backgroundInput" accept="image/*" style="display: none" />
               </div>
             </div>
 
@@ -46,15 +34,9 @@
               <div class="upload-area__dropzone" id="transparentDropzone">
                 <div class="upload-area__icon">✨</div>
                 <p class="upload-area__text">透過画像をドラッグ&ドロップ</p>
-                <p class="upload-area__subtext">
-                  複数PNG/JPG選択 または GIF1ファイル
-                </p>
-                <button
-                  class="upload-area__button"
-                  type="button"
-                  id="transparentButton"
-                >
-                  ファイルを選択
+                <p class="upload-area__subtext">複数PNG/JPG選択 または GIF1ファイル</p>
+                <button class="upload-area__button" type="button" id="transparentButton">
+                  <span class="upload-area__buttonStyle"> ファイルを選択 </span>
                 </button>
                 <input
                   type="file"
@@ -85,12 +67,7 @@
             ></div>
 
             <!-- トリミング枠 -->
-            <div
-              id="cropBox"
-              class="crop-box"
-              style="display: none"
-              data-template="crop-box"
-            ></div>
+            <div id="cropBox" class="crop-box" style="display: none" data-template="crop-box"></div>
           </div>
         </section>
 
@@ -100,9 +77,7 @@
             <div class="control-group">
               <h3 class="control-group__title">拡大設定</h3>
               <div class="control-item">
-                <label for="scaleInput" class="control-item__label"
-                  >倍率:</label
-                >
+                <label for="scaleInput" class="control-item__label">倍率:</label>
                 <input
                   type="number"
                   id="scaleInput"
@@ -116,11 +91,90 @@
             </div>
 
             <div class="control-group">
+              <h3 class="control-group__title">位置調整</h3>
+              <h4 class="control-group__subTitle">整列</h4>
+              <div class="control-item control-item__align-grid">
+                <div class="alignment-grid" role="group" aria-label="透過レイヤー整列">
+                  <button
+                    type="button"
+                    class="alignment-grid__button"
+                    data-align-target="top-left"
+                    aria-label="左上に整列"
+                  >
+                    ↖︎
+                  </button>
+                  <button
+                    type="button"
+                    class="alignment-grid__button"
+                    data-align-target="top-center"
+                    aria-label="上中央に整列"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    class="alignment-grid__button"
+                    data-align-target="top-right"
+                    aria-label="右上に整列"
+                  >
+                    ↗︎
+                  </button>
+                  <button
+                    type="button"
+                    class="alignment-grid__button"
+                    data-align-target="middle-left"
+                    aria-label="左中央に整列"
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    class="alignment-grid__button"
+                    data-align-target="middle-center"
+                    aria-label="中央に整列"
+                  >
+                    十
+                  </button>
+                  <button
+                    type="button"
+                    class="alignment-grid__button"
+                    data-align-target="middle-right"
+                    aria-label="右中央に整列"
+                  >
+                    →
+                  </button>
+                  <button
+                    type="button"
+                    class="alignment-grid__button"
+                    data-align-target="bottom-left"
+                    aria-label="左下に整列"
+                  >
+                    ↙︎
+                  </button>
+                  <button
+                    type="button"
+                    class="alignment-grid__button"
+                    data-align-target="bottom-center"
+                    aria-label="下中央に整列"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    type="button"
+                    class="alignment-grid__button"
+                    data-align-target="bottom-right"
+                    aria-label="右下に整列"
+                  >
+                    ↘︎
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="control-group">
               <h3 class="control-group__title">アニメーション設定</h3>
               <div class="control-item">
-                <label for="animationSpeedInput" class="control-item__label"
-                  >再生速度:</label
-                >
+                <label for="animationSpeedInput" class="control-item__label">再生速度:</label>
                 <input
                   type="range"
                   id="animationSpeedInput"
@@ -130,9 +184,7 @@
                   value="500"
                   step="50"
                 />
-                <span class="control-item__unit" id="animationSpeedValue"
-                  >500ms</span
-                >
+                <span class="control-item__unit" id="animationSpeedValue">500ms</span>
               </div>
               <div class="control-item">
                 <small class="control-item__description"
@@ -189,14 +241,14 @@
                   class="control-item__button control-item__button--primary"
                   disabled
                 >
-                  PNG形式でダウンロード
+                  PNG形式
                 </button>
                 <button
                   id="exportGifButton"
                   class="control-item__button control-item__button--secondary"
                   disabled
                 >
-                  GIF形式でダウンロード
+                  GIF形式
                 </button>
               </div>
             </div>
