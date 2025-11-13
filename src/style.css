@@ -442,12 +442,10 @@ body {
 
 .control-item__input,
 .control-item__select {
-  flex: 1;
   border: 1px solid #ccc;
   border-radius: 6px;
   padding: 8px 12px;
   min-width: 50px;
-  max-width: 120px;
   font-size: 1rem;
   text-align: center;
 }

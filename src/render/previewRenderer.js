@@ -8,6 +8,7 @@ let cropBox;
 let modeToggleEditButton;
 let modeToggleCropButton;
 let cropControls;
+let editModeControlGroups = [];
 let exportPngButton;
 let exportGifButton;
 
@@ -20,9 +21,11 @@ const initRendererDomRefs = () => {
   modeToggleEditButton = refs.modeToggleEdit;
   modeToggleCropButton = refs.modeToggleCrop;
   cropControls = refs.cropControls;
+  editModeControlGroups = Array.from(refs.editModeControls ?? []);
   exportPngButton = refs.exportPngButton;
   exportGifButton = refs.exportGifButton;
   updateModeToggleAppearance();
+  setEditModeControlsVisibility(!isCropMode);
 };
 
 let animationInterval = null;
@@ -56,6 +59,14 @@ const updateModeToggleAppearance = () => {
     modeToggleCropButton.classList.remove("mode-toggle__button--active");
     modeToggleCropButton.setAttribute("aria-pressed", "false");
   }
+};
+
+const setEditModeControlsVisibility = (shouldShow) => {
+  editModeControlGroups.forEach((group) => {
+    if (!group) return;
+    group.style.display = shouldShow ? "" : "none";
+    group.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+  });
 };
 
 const calculateTransparentImagePosition = (
@@ -519,6 +530,7 @@ const setCropMode = (shouldEnableCrop) => {
 
   if (isCropMode) {
     cropControls.style.display = "block";
+    setEditModeControlsVisibility(false);
 
     boundingBox.style.display = "none";
     isBoundingBoxSelected = false;
@@ -533,6 +545,7 @@ const setCropMode = (shouldEnableCrop) => {
     updateCropBox();
   } else {
     cropControls.style.display = "none";
+    setEditModeControlsVisibility(true);
 
     cropBox.style.display = "none";
     isBoundingBoxSelected = false;

@@ -13,6 +13,7 @@ const queryDomRefs = () => ({
   modeToggleEdit: document.getElementById("modeToggleEdit"),
   modeToggleCrop: document.getElementById("modeToggleCrop"),
   cropControls: document.getElementById("cropControls"),
+  editModeControls: document.querySelectorAll('[data-mode-panel="edit"]'),
   scaleInput: document.getElementById("scaleInput"),
   aspectRatioSelect: document.getElementById("aspectRatioSelect"),
   animationSpeedInput: document.getElementById("animationSpeedInput"),
