@@ -23,18 +23,6 @@ body {
   min-height: 100vh;
 }
 
-/* ヘッダー */
-.app__header {
-  padding-bottom: 20px;
-  text-align: center;
-}
-
-.app__title {
-  color: #1da1f2;
-  font-weight: 700;
-  font-size: 1.5rem;
-}
-
 /* メインコンテンツ */
 .app__main {
   display: grid;
@@ -125,8 +113,6 @@ body {
 .preview-section {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 20px 0;
 }
 
 .preview-container {
@@ -134,7 +120,7 @@ body {
   border: 2px solid #e0e0e0;
   background-color: #fafafa;
   width: 100%;
-  max-width: 700px;
+  max-width: 1000px;
   min-height: 400px;
   overflow: hidden;
 }
@@ -430,10 +416,9 @@ body {
 }
 
 .control-group__subTitle {
-  margin-bottom: 12px;
-  color: #333;
+  color: #47505b;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.85rem;
 }
 
 .control-item {
@@ -447,10 +432,12 @@ body {
   margin-bottom: 0;
 }
 
-.control-item__label {
-  min-width: 50px;
-  color: #555;
-  font-weight: 500;
+.control-item__inputBox {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding-right: 8px;
+  min-width: 60px;
+  max-width: 120px;
 }
 
 .control-item__input,
@@ -458,17 +445,18 @@ body {
   flex: 1;
   border: 1px solid #ccc;
   border-radius: 6px;
-  background-color: white;
   padding: 8px 12px;
-  min-width: 60px;
+  min-width: 50px;
   max-width: 120px;
   font-size: 1rem;
+  text-align: center;
 }
 
 /* 数値入力フィールド専用スタイル */
 .control-item__input[type="number"] {
+  border-color: transparent;
+  padding: 8px 0px 8px 12px;
   max-width: 80px;
-  text-align: center;
 }
 
 /* スライダー専用スタイル */
@@ -523,16 +511,30 @@ body {
   font-size: 0.9rem;
 }
 
+.control-group_row {
+  display: flex;
+  justify-content: space-between;
+}
+
 .control-item__align-grid {
   flex-direction: column;
   align-items: stretch;
 }
 
+.control-item__position-grid {
+  flex-direction: column;
+  gap: 4px;
+}
+
+/*
+  位置調整
+*/
+/* 整列 */
 .alignment-grid {
   display: grid;
   grid-template-columns: repeat(3, 30px);
-  gap: 8px;
-  width: 100%;
+  gap: 4px;
+  width: fit-content;
 }
 
 .alignment-grid__button {
@@ -556,6 +558,43 @@ body {
 .alignment-grid__button:focus-visible {
   outline: 2px solid rgb(29 161 242 / 0.4);
   outline-offset: 2px;
+}
+
+/* 座標調整 */
+.position-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.position-field__controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.position-field__step {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: #9c9fa3;
+  width: 24px;
+  height: 24px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.position-field__step:hover:not(:disabled) {
+  background-color: #667281;
+}
+
+.position-field__step:disabled {
+  background-color: #ccc;
+  color: #999;
+}
+
+.position-field__unit {
+  color: #666;
+  font-size: 0.9rem;
 }
 
 .control-item__button {

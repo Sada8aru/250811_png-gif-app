@@ -1,5 +1,6 @@
 import { projectState } from "../state/projectState";
 import { getDomRefs } from "./domRefs";
+import { syncPositionInputs } from "./controlPanel";
 import {
   updatePreview,
   showBoundingBoxTemporarily,
@@ -253,6 +254,7 @@ const handleDrag = (e) => {
     projectState.transformState.position.y += moveY;
 
     updatePreview();
+    syncPositionInputs();
   } else if (isResizing && resizeHandle) {
     const bg = projectState.backgroundImage;
     const canvasRect = previewCanvas.getBoundingClientRect();

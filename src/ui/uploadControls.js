@@ -1,6 +1,7 @@
 import { projectState } from "../state/projectState";
 import { getDomRefs } from "./domRefs";
 import { showError } from "./notifications";
+import { syncPositionInputs } from "./controlPanel";
 import {
   validateImageFile,
   isGifFile,
@@ -144,6 +145,7 @@ const handleBackgroundImageUpload = async (file) => {
     });
 
     updatePreview();
+    syncPositionInputs();
 
     console.log("背景画像読み込み完了");
   } catch (error) {
@@ -296,6 +298,7 @@ const handleTransparentImageUpload = async (files) => {
     });
 
     updatePreview();
+    syncPositionInputs();
     updateExportButtons();
 
     if (!isCropModeEnabled() && projectState.transparentImages.length > 0) {

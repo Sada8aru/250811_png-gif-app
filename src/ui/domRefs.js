@@ -21,6 +21,9 @@ const queryDomRefs = () => ({
   exportGifButton: document.getElementById("exportGifButton"),
   errorMessage: document.getElementById("errorMessage"),
   alignmentButtons: document.querySelectorAll("[data-align-target]"),
+  positionInputX: document.getElementById("positionInputX"),
+  positionInputY: document.getElementById("positionInputY"),
+  positionStepperButtons: document.querySelectorAll("[data-position-step]"),
 });
 
 let domRefs;

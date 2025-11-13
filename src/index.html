@@ -10,10 +10,6 @@
 
   <body>
     <div class="app">
-      <header class="app__header">
-        <h1 class="app__title">X用ポスト画像生成ツール</h1>
-      </header>
-
       <main class="app__main">
         <!-- ファイルアップロードエリア -->
         <section class="upload-section">
@@ -75,126 +71,6 @@
         <section class="control-section">
           <div class="control-panel">
             <div class="control-group">
-              <h3 class="control-group__title">拡大設定</h3>
-              <div class="control-item">
-                <label for="scaleInput" class="control-item__label">倍率:</label>
-                <input
-                  type="number"
-                  id="scaleInput"
-                  class="control-item__input"
-                  min="1"
-                  value="1"
-                  step="1"
-                />
-                <span class="control-item__unit">倍</span>
-              </div>
-            </div>
-
-            <div class="control-group">
-              <h3 class="control-group__title">位置調整</h3>
-              <h4 class="control-group__subTitle">整列</h4>
-              <div class="control-item control-item__align-grid">
-                <div class="alignment-grid" role="group" aria-label="透過レイヤー整列">
-                  <button
-                    type="button"
-                    class="alignment-grid__button"
-                    data-align-target="top-left"
-                    aria-label="左上に整列"
-                  >
-                    ↖︎
-                  </button>
-                  <button
-                    type="button"
-                    class="alignment-grid__button"
-                    data-align-target="top-center"
-                    aria-label="上中央に整列"
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    class="alignment-grid__button"
-                    data-align-target="top-right"
-                    aria-label="右上に整列"
-                  >
-                    ↗︎
-                  </button>
-                  <button
-                    type="button"
-                    class="alignment-grid__button"
-                    data-align-target="middle-left"
-                    aria-label="左中央に整列"
-                  >
-                    ←
-                  </button>
-                  <button
-                    type="button"
-                    class="alignment-grid__button"
-                    data-align-target="middle-center"
-                    aria-label="中央に整列"
-                  >
-                    十
-                  </button>
-                  <button
-                    type="button"
-                    class="alignment-grid__button"
-                    data-align-target="middle-right"
-                    aria-label="右中央に整列"
-                  >
-                    →
-                  </button>
-                  <button
-                    type="button"
-                    class="alignment-grid__button"
-                    data-align-target="bottom-left"
-                    aria-label="左下に整列"
-                  >
-                    ↙︎
-                  </button>
-                  <button
-                    type="button"
-                    class="alignment-grid__button"
-                    data-align-target="bottom-center"
-                    aria-label="下中央に整列"
-                  >
-                    ↓
-                  </button>
-                  <button
-                    type="button"
-                    class="alignment-grid__button"
-                    data-align-target="bottom-right"
-                    aria-label="右下に整列"
-                  >
-                    ↘︎
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="control-group">
-              <h3 class="control-group__title">アニメーション設定</h3>
-              <div class="control-item">
-                <label for="animationSpeedInput" class="control-item__label">再生速度:</label>
-                <input
-                  type="range"
-                  id="animationSpeedInput"
-                  class="control-item__slider"
-                  min="50"
-                  max="2000"
-                  value="500"
-                  step="50"
-                />
-                <span class="control-item__unit" id="animationSpeedValue">500ms</span>
-              </div>
-              <div class="control-item">
-                <small class="control-item__description"
-                  >値が小さいほど高速再生（50ms = 高速、2000ms = 低速）<br />
-                  ※GIF読み込み時は元の速度に合わせて範囲が自動調整されます</small
-                >
-              </div>
-            </div>
-
-            <div class="control-group">
               <h3 class="control-group__title">操作モード</h3>
               <div class="control-item control-item__mode-toggle">
                 <div class="mode-toggle" role="group" aria-label="操作モード">
@@ -230,6 +106,205 @@
                   <option value="16:9">16:9 (横長)</option>
                   <option value="4:3">4:3 (標準)</option>
                 </select>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <h3 class="control-group__title">画像</h3>
+              <div class="control-item">
+                <label for="scaleInput" class="control-group__subTitle">サイズ</label>
+                <span class="control-item__inputBox">
+                  <input
+                    type="number"
+                    id="scaleInput"
+                    class="control-item__input"
+                    min="1"
+                    value="1"
+                    step="1"
+                  />
+                  <span class="control-item__unit">倍</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-group_row">
+                <div class="control-group_rowBlock">
+                  <h4 class="control-group__subTitle">整列</h4>
+                  <div class="control-item control-item__align-grid">
+                    <div class="alignment-grid" role="group" aria-label="透過レイヤー整列">
+                      <button
+                        type="button"
+                        class="alignment-grid__button"
+                        data-align-target="top-left"
+                        aria-label="左上に整列"
+                      >
+                        ↖︎
+                      </button>
+                      <button
+                        type="button"
+                        class="alignment-grid__button"
+                        data-align-target="top-center"
+                        aria-label="上中央に整列"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        class="alignment-grid__button"
+                        data-align-target="top-right"
+                        aria-label="右上に整列"
+                      >
+                        ↗︎
+                      </button>
+                      <button
+                        type="button"
+                        class="alignment-grid__button"
+                        data-align-target="middle-left"
+                        aria-label="左中央に整列"
+                      >
+                        ←
+                      </button>
+                      <button
+                        type="button"
+                        class="alignment-grid__button"
+                        data-align-target="middle-center"
+                        aria-label="中央に整列"
+                      >
+                        十
+                      </button>
+                      <button
+                        type="button"
+                        class="alignment-grid__button"
+                        data-align-target="middle-right"
+                        aria-label="右中央に整列"
+                      >
+                        →
+                      </button>
+                      <button
+                        type="button"
+                        class="alignment-grid__button"
+                        data-align-target="bottom-left"
+                        aria-label="左下に整列"
+                      >
+                        ↙︎
+                      </button>
+                      <button
+                        type="button"
+                        class="alignment-grid__button"
+                        data-align-target="bottom-center"
+                        aria-label="下中央に整列"
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        class="alignment-grid__button"
+                        data-align-target="bottom-right"
+                        aria-label="右下に整列"
+                      >
+                        ↘︎
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="control-group_rowBlock">
+                  <div class="control-item control-item__position-grid">
+                    <div class="position-field">
+                      <label for="positionInputX" class="control-group__subTitle">X座標</label>
+                      <div class="position-field__controls">
+                        <button
+                          type="button"
+                          class="position-field__step"
+                          data-axis="x"
+                          data-position-step="-1"
+                          aria-label="左へ1px移動"
+                        >
+                          -
+                        </button>
+                        <span class="control-item__inputBox">
+                          <input
+                            type="number"
+                            id="positionInputX"
+                            class="control-item__input"
+                            data-axis="x"
+                            step="1"
+                            inputmode="numeric"
+                            autocomplete="off"
+                          />
+                          <span class="control-item__unit position-field__unit">px</span>
+                        </span>
+                        <button
+                          type="button"
+                          class="position-field__step"
+                          data-axis="x"
+                          data-position-step="1"
+                          aria-label="右へ1px移動"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div class="position-field">
+                      <label for="positionInputY" class="control-group__subTitle">Y座標</label>
+                      <div class="position-field__controls">
+                        <button
+                          type="button"
+                          class="position-field__step"
+                          data-axis="y"
+                          data-position-step="-1"
+                          aria-label="上へ1px移動"
+                        >
+                          -
+                        </button>
+                        <span class="control-item__inputBox">
+                          <input
+                            type="number"
+                            id="positionInputY"
+                            class="control-item__input"
+                            data-axis="y"
+                            step="1"
+                            inputmode="numeric"
+                            autocomplete="off"
+                          />
+                          <span class="control-item__unit position-field__unit">px</span>
+                        </span>
+                        <button
+                          type="button"
+                          class="position-field__step"
+                          data-axis="y"
+                          data-position-step="1"
+                          aria-label="下へ1px移動"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <h3 class="control-group__title">アニメーション設定</h3>
+              <div class="control-item">
+                <label for="animationSpeedInput" class="control-group__subTitle">再生速度</label>
+                <input
+                  type="range"
+                  id="animationSpeedInput"
+                  class="control-item__slider"
+                  min="50"
+                  max="2000"
+                  value="500"
+                  step="50"
+                />
+                <span class="control-item__unit" id="animationSpeedValue">500ms</span>
+              </div>
+              <div class="control-item">
+                <small class="control-item__description"
+                  >値が小さいほど高速再生（50ms = 高速、2000ms = 低速）<br />
+                  ※GIF読み込み時は元の速度に合わせて範囲が自動調整されます</small
+                >
               </div>
             </div>
 
