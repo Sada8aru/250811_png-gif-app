@@ -436,8 +436,12 @@ const getAspectRatio = (ratio) => {
       return 1;
     case "16:9":
       return 16 / 9;
+    case "9:16":
+      return 9 / 16;
     case "4:3":
       return 4 / 3;
+    case "3:4":
+      return 3 / 4;
     case "free":
       return null;
     case "original":

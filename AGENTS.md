@@ -15,4 +15,9 @@ Use `@/openspec/AGENTS.md` to learn:
 
 Keep this managed block so 'openspec update' can refresh the instructions.
 
+## カスタムルール
+
+- OpenSpecに沿って進める場合、タスク完了時、task.mdの該当タスクを、マークしてください
+- タスク完了報告前に`npm run lint`を行い、エラーがあれば修正してください。
+
 <!-- OPENSPEC:END -->
