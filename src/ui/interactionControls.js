@@ -1,6 +1,7 @@
 import { projectState } from "../state/projectState";
 import { getDomRefs } from "./domRefs";
-import { syncPositionInputs } from "./controlPanel";
+import { syncPositionInputs, nudgePosition } from "./controlPanel";
+import { getGlobalArrowDelta } from "./positionKeymap";
 import {
   updatePreview,
   showBoundingBoxTemporarily,
@@ -9,6 +10,7 @@ import {
   calculateTransparentImagePosition,
   isCropModeEnabled,
   setBoundingBoxSelected,
+  isBoundingBoxActive,
   getAspectRatio,
 } from "../render/previewRenderer";
 
@@ -563,6 +565,42 @@ const setupInteractionControls = () => {
   setupCropBox();
   setupCanvasClick();
   setupWindowResize();
+  setupKeyboardPositionControls();
+};
+
+const isPositionInputActive = () => {
+  const refs = getDomRefs();
+  const activeElement = document.activeElement;
+  return activeElement === refs.positionInputX || activeElement === refs.positionInputY;
+};
+
+const handleGlobalArrowKeyDown = (e) => {
+  if (
+    e.defaultPrevented ||
+    isCropModeEnabled() ||
+    isPositionInputActive() ||
+    !isBoundingBoxActive()
+  ) {
+    return;
+  }
+
+  if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+    return;
+  }
+
+  if (!projectState.backgroundImage || projectState.transparentImages.length === 0) {
+    return;
+  }
+
+  const delta = getGlobalArrowDelta(e.key, e.shiftKey);
+  if (!delta) return;
+
+  e.preventDefault();
+  nudgePosition(delta.axis, delta.delta);
+};
+
+const setupKeyboardPositionControls = () => {
+  window.addEventListener("keydown", handleGlobalArrowKeyDown);
 };
 
 export { setupInteractionControls };

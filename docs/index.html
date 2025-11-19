@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>X用ポスト画像生成ツール</title>
-    <script type="module" crossorigin src="/250811_png-gif-app/assets/index-DNv1eApS.js"></script>
-    <link rel="stylesheet" crossorigin href="/250811_png-gif-app/assets/index-D_eGbH9I.css">
+    <script type="module" crossorigin src="/250811_png-gif-app/assets/index-CM35Q1OP.js"></script>
+    <link rel="stylesheet" crossorigin href="/250811_png-gif-app/assets/index-BZhSjN4t.css">
   </head>
 
   <body>
@@ -104,7 +104,9 @@
                   <option value="free">自由形式</option>
                   <option value="1:1">1:1 (正方形)</option>
                   <option value="16:9">16:9 (横長)</option>
+                  <option value="9:16">16:9 (縦長)</option>
                   <option value="4:3">4:3 (標準)</option>
+                  <option value="3:4">3:4 (縦長)</option>
                 </select>
               </div>
             </div>
@@ -213,15 +215,6 @@
                     <div class="position-field">
                       <label for="positionInputX" class="control-group__subTitle">X座標</label>
                       <div class="position-field__controls">
-                        <button
-                          type="button"
-                          class="position-field__step"
-                          data-axis="x"
-                          data-position-step="-1"
-                          aria-label="左へ1px移動"
-                        >
-                          -
-                        </button>
                         <span class="control-item__inputBox">
                           <input
                             type="number"
@@ -234,29 +227,11 @@
                           />
                           <span class="control-item__unit position-field__unit">px</span>
                         </span>
-                        <button
-                          type="button"
-                          class="position-field__step"
-                          data-axis="x"
-                          data-position-step="1"
-                          aria-label="右へ1px移動"
-                        >
-                          +
-                        </button>
                       </div>
                     </div>
                     <div class="position-field">
                       <label for="positionInputY" class="control-group__subTitle">Y座標</label>
                       <div class="position-field__controls">
-                        <button
-                          type="button"
-                          class="position-field__step"
-                          data-axis="y"
-                          data-position-step="-1"
-                          aria-label="上へ1px移動"
-                        >
-                          -
-                        </button>
                         <span class="control-item__inputBox">
                           <input
                             type="number"
@@ -269,15 +244,6 @@
                           />
                           <span class="control-item__unit position-field__unit">px</span>
                         </span>
-                        <button
-                          type="button"
-                          class="position-field__step"
-                          data-axis="y"
-                          data-position-step="1"
-                          aria-label="下へ1px移動"
-                        >
-                          +
-                        </button>
                       </div>
                     </div>
                   </div>

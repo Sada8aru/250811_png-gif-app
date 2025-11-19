@@ -1,6 +1,7 @@
 import { projectState } from "../state/projectState";
 import { getDomRefs } from "./domRefs";
 import { showError } from "./notifications";
+import { getInputKeyDelta } from "./positionKeymap";
 import {
   updatePreview,
   showBoundingBoxTemporarily,
@@ -19,9 +20,6 @@ let aspectRatioSelect;
 let alignmentButtons = [];
 let positionInputX;
 let positionInputY;
-let positionStepperButtons = [];
-
-const POSITION_STEP = 1;
 
 const initControlDomRefs = () => {
   const refs = getDomRefs();
@@ -34,7 +32,6 @@ const initControlDomRefs = () => {
   alignmentButtons = Array.from(refs.alignmentButtons ?? []);
   positionInputX = refs.positionInputX;
   positionInputY = refs.positionInputY;
-  positionStepperButtons = Array.from(refs.positionStepperButtons ?? []);
 };
 
 const canAdjustPosition = () =>
@@ -79,7 +76,7 @@ const clampToBounds = (value, size, boundsStart, boundsSize) => {
 };
 
 const setPositionControlsDisabled = (shouldDisable) => {
-  [positionInputX, positionInputY, ...positionStepperButtons].forEach((elem) => {
+  [positionInputX, positionInputY].forEach((elem) => {
     if (elem) {
       elem.disabled = shouldDisable;
     }
@@ -173,6 +170,17 @@ const handlePositionFieldBlur = (e) => {
   }
 };
 
+const handlePositionFieldKeyDown = (e) => {
+  const axis = e.target.dataset.axis;
+  if (!axis) return;
+
+  const delta = getInputKeyDelta(e.key, e.shiftKey);
+  if (delta === null) return;
+
+  e.preventDefault();
+  nudgePosition(axis, delta);
+};
+
 const attachPositionControls = () => {
   if (!positionInputX || !positionInputY) return;
 
@@ -180,15 +188,7 @@ const attachPositionControls = () => {
     input.addEventListener("input", handlePositionFieldInput);
     input.addEventListener("change", handlePositionFieldInput);
     input.addEventListener("blur", handlePositionFieldBlur);
-  });
-
-  positionStepperButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const axis = button.getAttribute("data-axis");
-      const step = Number.parseInt(button.getAttribute("data-position-step"), 10);
-      if (!axis || Number.isNaN(step)) return;
-      nudgePosition(axis, step);
-    });
+    input.addEventListener("keydown", handlePositionFieldKeyDown);
   });
 };
 
@@ -279,4 +279,4 @@ const setupControls = () => {
   syncPositionInputs();
 };
 
-export { setupControls, syncPositionInputs };
+export { setupControls, syncPositionInputs, nudgePosition };

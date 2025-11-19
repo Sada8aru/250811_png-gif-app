@@ -24,7 +24,6 @@ const queryDomRefs = () => ({
   alignmentButtons: document.querySelectorAll("[data-align-target]"),
   positionInputX: document.getElementById("positionInputX"),
   positionInputY: document.getElementById("positionInputY"),
-  positionStepperButtons: document.querySelectorAll("[data-position-step]"),
 });
 
 let domRefs;
