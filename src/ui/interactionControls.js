@@ -249,10 +249,6 @@ const handleDrag = (e) => {
     updatePreview();
     syncPositionInputs();
   } else if (isResizing && resizeHandle) {
-    const bg = projectState.backgroundImage;
-    const canvasRect = previewCanvas.getBoundingClientRect();
-    const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea: null, canvasRect });
-
     const handleClass = resizeHandle.className;
     let scaleDelta = 0;
 

@@ -31,13 +31,6 @@ const initRendererDomRefs = () => {
 
 let animationInterval = null;
 let currentFrameIndex = 0;
-let isDragging = false;
-let isResizing = false;
-let dragStartX = 0;
-let dragStartY = 0;
-let resizeHandle = null;
-let originalBounds = null;
-let accumulatedScale = 0;
 let isCropMode = false;
 let isBoundingBoxSelected = false;
 let boundingBoxFadeTimer = null;
@@ -146,8 +139,6 @@ const renderCropModePreview = () => {
 
 const updateExportButtons = () => {
   const hasBackground = !!projectState.backgroundImage;
-  const hasTransparent = projectState.transparentImages.length > 0;
-
   exportPngButton.disabled = !hasBackground;
   exportGifButton.disabled = !(hasBackground && projectState.transparentImages.length > 1);
 };
