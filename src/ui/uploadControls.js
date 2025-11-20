@@ -261,9 +261,9 @@ const handleTransparentImageUpload = async (files) => {
 
     const hasGifFrames = projectState.transparentImages.some((img) => img.frameInfo?.isFromGif);
     if (incomingAnimationType === "sequence" && !hasGifFrames) {
-      animationSpeedInput.min = 50;
-      animationSpeedInput.max = 2000;
-      animationSpeedInput.step = 50;
+      animationSpeedInput.min = 10;
+      animationSpeedInput.max = 1000;
+      animationSpeedInput.step = 10;
 
       const shouldKeepSequenceSpeed =
         previousAnimationType === "sequence" && incomingAnimationType === "sequence";
