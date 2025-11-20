@@ -1,5 +1,6 @@
 import { projectState } from "../state/projectState";
 import { getDomRefs } from "../ui/domRefs";
+import { getDisplayMetrics, toDisplayRect } from "./displayMetrics";
 
 let previewCanvas;
 let previewPlaceholder;
@@ -397,37 +398,24 @@ const updateBoundingBox = () => {
   const cropArea = projectState.transformState.cropArea;
 
   const canvasRect = previewCanvas.getBoundingClientRect();
+  const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea, canvasRect });
 
   const imagePos = calculateTransparentImagePosition(transparentImg, scale, pos, bg, cropArea);
-
-  const scaleFactor = (() => {
-    if (cropArea) {
-      const scaleX = canvasRect.width / cropArea.width;
-      const scaleY = canvasRect.height / cropArea.height;
-      return Math.min(scaleX, scaleY);
-    }
-    const scaleX = canvasRect.width / bg.metadata.width;
-    const scaleY = canvasRect.height / bg.metadata.height;
-    return Math.min(scaleX, scaleY);
-  })();
-
-  const canvasOffsetX = cropArea
-    ? (canvasRect.width - cropArea.width * scaleFactor) / 2
-    : (canvasRect.width - bg.metadata.width * scaleFactor) / 2;
-  const canvasOffsetY = cropArea
-    ? (canvasRect.height - cropArea.height * scaleFactor) / 2
-    : (canvasRect.height - bg.metadata.height * scaleFactor) / 2;
-
-  const displayX = imagePos.x * scaleFactor + canvasOffsetX;
-  const displayY = imagePos.y * scaleFactor + canvasOffsetY;
-  const displayWidth = imagePos.width * scaleFactor;
-  const displayHeight = imagePos.height * scaleFactor;
+  const displayRect = toDisplayRect(
+    {
+      x: imagePos.x,
+      y: imagePos.y,
+      width: imagePos.width,
+      height: imagePos.height,
+    },
+    metrics,
+  );
 
   boundingBox.style.display = "block";
-  boundingBox.style.left = displayX + "px";
-  boundingBox.style.top = displayY + "px";
-  boundingBox.style.width = displayWidth + "px";
-  boundingBox.style.height = displayHeight + "px";
+  boundingBox.style.left = displayRect.x + "px";
+  boundingBox.style.top = displayRect.y + "px";
+  boundingBox.style.width = displayRect.width + "px";
+  boundingBox.style.height = displayRect.height + "px";
 };
 
 const getAspectRatio = (ratio) => {
@@ -460,10 +448,7 @@ const updateCropBox = () => {
 
   const bg = projectState.backgroundImage;
   const canvasRect = previewCanvas.getBoundingClientRect();
-
-  const scaleX = canvasRect.width / bg.metadata.width;
-  const scaleY = canvasRect.height / bg.metadata.height;
-  const actualScale = Math.min(scaleX, scaleY);
+  const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea: null, canvasRect });
 
   let cropArea = projectState.transformState.cropArea;
 
@@ -503,19 +488,13 @@ const updateCropBox = () => {
     projectState.transformState.cropArea = cropArea;
   }
 
-  const displayX = cropArea.x * actualScale;
-  const displayY = cropArea.y * actualScale;
-  const displayWidth = cropArea.width * actualScale;
-  const displayHeight = cropArea.height * actualScale;
-
-  const canvasOffsetX = (canvasRect.width - bg.metadata.width * actualScale) / 2;
-  const canvasOffsetY = (canvasRect.height - bg.metadata.height * actualScale) / 2;
+  const displayRect = toDisplayRect(cropArea, metrics);
 
   cropBox.style.display = "block";
-  cropBox.style.left = displayX + canvasOffsetX + "px";
-  cropBox.style.top = displayY + canvasOffsetY + "px";
-  cropBox.style.width = displayWidth + "px";
-  cropBox.style.height = displayHeight + "px";
+  cropBox.style.left = displayRect.x + "px";
+  cropBox.style.top = displayRect.y + "px";
+  cropBox.style.width = displayRect.width + "px";
+  cropBox.style.height = displayRect.height + "px";
 };
 
 /**

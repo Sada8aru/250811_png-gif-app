@@ -13,6 +13,7 @@ import {
   isBoundingBoxActive,
   getAspectRatio,
 } from "../render/previewRenderer";
+import { getDisplayMetrics } from "../render/displayMetrics";
 
 let previewCanvas;
 let boundingBox;
@@ -237,20 +238,10 @@ const handleDrag = (e) => {
     const bg = projectState.backgroundImage;
     const cropArea = projectState.transformState.cropArea;
     const canvasRect = previewCanvas.getBoundingClientRect();
+    const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea, canvasRect });
 
-    let actualScale;
-    if (cropArea) {
-      const scaleX = canvasRect.width / cropArea.width;
-      const scaleY = canvasRect.height / cropArea.height;
-      actualScale = Math.min(scaleX, scaleY);
-    } else {
-      const scaleX = canvasRect.width / bg.metadata.width;
-      const scaleY = canvasRect.height / bg.metadata.height;
-      actualScale = Math.min(scaleX, scaleY);
-    }
-
-    const moveX = deltaX / actualScale;
-    const moveY = deltaY / actualScale;
+    const moveX = deltaX / metrics.scale;
+    const moveY = deltaY / metrics.scale;
 
     projectState.transformState.position.x += moveX;
     projectState.transformState.position.y += moveY;
@@ -260,10 +251,7 @@ const handleDrag = (e) => {
   } else if (isResizing && resizeHandle) {
     const bg = projectState.backgroundImage;
     const canvasRect = previewCanvas.getBoundingClientRect();
-
-    const scaleX = canvasRect.width / bg.metadata.width;
-    const scaleY = canvasRect.height / bg.metadata.height;
-    const actualScale = Math.min(scaleX, scaleY);
+    const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea: null, canvasRect });
 
     const handleClass = resizeHandle.className;
     let scaleDelta = 0;
@@ -362,13 +350,10 @@ const handleCropDrag = (e) => {
   if (isCropDragging) {
     const bg = projectState.backgroundImage;
     const canvasRect = previewCanvas.getBoundingClientRect();
+    const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea: null, canvasRect });
 
-    const scaleX = canvasRect.width / bg.metadata.width;
-    const scaleY = canvasRect.height / bg.metadata.height;
-    const actualScale = Math.min(scaleX, scaleY);
-
-    const moveX = deltaX / actualScale;
-    const moveY = deltaY / actualScale;
+    const moveX = deltaX / metrics.scale;
+    const moveY = deltaY / metrics.scale;
 
     const cropArea = projectState.transformState.cropArea;
     if (!cropArea) return;
@@ -387,12 +372,10 @@ const handleCropDrag = (e) => {
 
     if (!cropArea) return;
 
-    const scaleX = canvasRect.width / bg.metadata.width;
-    const scaleY = canvasRect.height / bg.metadata.height;
-    const actualScale = Math.min(scaleX, scaleY);
+    const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea: null, canvasRect });
 
-    const resizeX = deltaX / actualScale;
-    const resizeY = deltaY / actualScale;
+    const resizeX = deltaX / metrics.scale;
+    const resizeY = deltaY / metrics.scale;
 
     const handleClass = cropResizeHandle.className;
     const prevArea = { ...cropArea };
@@ -495,22 +478,16 @@ const setupCanvasClick = () => {
     const clickY = e.clientY - canvasRect.top;
 
     const imagePos = calculateTransparentImagePosition(transparentImg, scale, pos, bg, cropArea);
+    const metrics = getDisplayMetrics({
+      bgSize: bg.metadata,
+      cropArea: cropArea ?? null,
+      canvasRect,
+    });
 
-    const scaleX = canvasRect.width / (cropArea ? cropArea.width : bg.metadata.width);
-    const scaleY = canvasRect.height / (cropArea ? cropArea.height : bg.metadata.height);
-    const actualScale = Math.min(scaleX, scaleY);
-
-    const offsetX = cropArea
-      ? (canvasRect.width - cropArea.width * actualScale) / 2
-      : (canvasRect.width - bg.metadata.width * actualScale) / 2;
-    const offsetY = cropArea
-      ? (canvasRect.height - cropArea.height * actualScale) / 2
-      : (canvasRect.height - bg.metadata.height * actualScale) / 2;
-
-    const displayX = imagePos.x * actualScale + offsetX;
-    const displayY = imagePos.y * actualScale + offsetY;
-    const displayWidth = imagePos.width * actualScale;
-    const displayHeight = imagePos.height * actualScale;
+    const displayX = imagePos.x * metrics.scale + metrics.offsetX;
+    const displayY = imagePos.y * metrics.scale + metrics.offsetY;
+    const displayWidth = imagePos.width * metrics.scale;
+    const displayHeight = imagePos.height * metrics.scale;
 
     if (
       clickX >= displayX &&
