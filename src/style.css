@@ -1,11 +1,6 @@
-/* リセットとベーススタイル */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 body {
+  background-color: #f6f6ff;
+  height: 100%;
   color: #333;
   line-height: 1.6;
   font-family:
@@ -14,11 +9,9 @@ body {
 
 /* アプリケーション全体 */
 .app {
-  margin: 0 auto;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  background-color: #f6f6ff;
+  margin-inline: auto;
   max-width: 1400px;
-  min-height: 100vh;
+  height: 100%;
 }
 
 /* メインコンテンツ */
@@ -28,8 +21,9 @@ body {
     "upload preview control" 1fr /
     200px 1fr 320px;
   align-items: start;
-  gap: 16px;
-  padding: 10px;
+  gap: 12px;
+  padding: 12px;
+  height: 100%;
   @media (width <= 1000px) {
     grid-template:
       "preview control" 1fr
@@ -54,7 +48,6 @@ body {
   display: grid;
   grid-template-rows: auto auto;
   gap: 16px;
-  width: 100%;
   @media (width <= 1000px) {
     grid-template-rows: auto;
     grid-template-columns: 1fr 1fr;
@@ -72,9 +65,12 @@ body {
   border-radius: 10px;
   background-color: #fafafe;
   padding: 20px;
+  max-width: 200px;
   text-align: center;
   @media (width <= 1000px) {
     padding: 14px;
+    max-width: unset;
+    height: 100%;
     min-height: 200px;
   }
 
@@ -90,20 +86,8 @@ body {
   background-color: #e6f3ff;
 }
 
-.upload-area__icon {
-  margin-bottom: 15px;
-  font-size: 3rem;
-  @media (width <= 1000px) {
-    display: inline-block;
-    margin-bottom: 0;
-    font-size: 2rem;
-  }
-}
-
 .upload-area__button {
   cursor: pointer;
-  width: 100%;
-  height: 100%;
 
   &::after {
     position: absolute;
@@ -115,31 +99,25 @@ body {
   }
 }
 
-.upload-area__buttonStyle {
-  border-radius: 6px;
-  background-color: #1da1f2;
-  padding: 12px 24px;
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-  white-space: nowrap;
+.upload-area__icon {
+  font-size: 2rem;
 }
 
 .upload-area__text {
-  margin-bottom: 5px;
+  display: -webkit-box;
+  margin-bottom: 8px;
   max-height: 150px;
-  overflow-y: auto;
+  overflow: hidden;
   color: #333;
   font-weight: 600;
   font-size: 1.1rem;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-height: 1.3;
 
   @media (width <= 1000px) {
-    display: -webkit-box;
     max-height: 80px;
-    overflow: hidden;
     font-size: 1rem;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
   }
 }
 
@@ -147,9 +125,21 @@ body {
   margin-bottom: 15px;
   color: #666;
   font-size: 0.9rem;
+  line-height: 1.2;
   @media (width <= 1000px) {
     font-size: 0.8rem;
   }
+}
+
+.upload-area__buttonStyle {
+  display: block;
+  border-radius: 6px;
+  background-color: #1da1f2;
+  padding: 8px 24px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  white-space: nowrap;
 }
 
 /* プレビューセクション */
@@ -157,7 +147,8 @@ body {
   display: flex;
   grid-area: preview;
   justify-content: center;
-  max-height: calc(100vh - 40px);
+  height: 100%;
+  max-height: calc(100vh - 20px);
 }
 
 .preview-container {
@@ -438,27 +429,28 @@ body {
   display: flex;
   grid-area: control;
   flex-direction: column;
-}
-
-.control-panel {
   border: 2px solid #d1d1da;
   border-radius: 10px;
   background-color: #fafafe;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.control-panel {
+  border-radius: 10px;
   padding: 16px;
 }
 
 .control-group {
   margin-bottom: 16px;
-}
-
-.control-group:last-child {
-  margin-bottom: 0;
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .control-group__title {
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 8px;
   color: #333;
   font-weight: 600;
   font-size: 1.1rem;
@@ -542,9 +534,9 @@ body {
 
 /* 説明文のスタイル */
 .control-item__description {
-  margin-top: 5px;
+  margin-top: 6px;
   color: #666;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   line-height: 1.3;
 }
 
@@ -662,9 +654,9 @@ body {
 
 .mode-toggle {
   display: flex;
-  gap: 4px;
   border: 1px solid #dce2e8;
   border-radius: 6px;
+  background-color: #fbfbff;
   background-color: #fbfbff;
   width: 100%;
 }

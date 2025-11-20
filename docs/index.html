@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>X用ポスト画像生成ツール</title>
-    <script type="module" crossorigin src="/250811_png-gif-app/assets/index-CM35Q1OP.js"></script>
-    <link rel="stylesheet" crossorigin href="/250811_png-gif-app/assets/index-BZhSjN4t.css">
+    <script type="module" crossorigin src="/250811_png-gif-app/assets/index-MOC7sr95.js"></script>
+    <link rel="stylesheet" crossorigin href="/250811_png-gif-app/assets/index-cSGf5LBt.css">
   </head>
 
   <body>
@@ -16,7 +16,7 @@
           <div class="upload-area">
             <div class="upload-area__background">
               <div class="upload-area__dropzone" id="backgroundDropzone">
-                <div class="upload-area__icon">🖼️</div>
+                <span class="upload-area__icon">🖼️</span>
                 <p class="upload-area__text">背景画像をドラッグ&ドロップ</p>
                 <p class="upload-area__subtext">または</p>
                 <button class="upload-area__button" type="button" id="backgroundButton">
@@ -28,7 +28,7 @@
 
             <div class="upload-area__transparent">
               <div class="upload-area__dropzone" id="transparentDropzone">
-                <div class="upload-area__icon">✨</div>
+                <span class="upload-area__icon">✨</span>
                 <p class="upload-area__text">透過画像をドラッグ&ドロップ</p>
                 <p class="upload-area__subtext">複数PNG/JPG選択 または GIF1ファイル</p>
                 <button class="upload-area__button" type="button" id="transparentButton">
@@ -251,7 +251,7 @@
               </div>
             </div>
 
-            <div class="control-group">
+            <div class="control-group" data-mode-panel="edit">
               <h3 class="control-group__title">アニメーション設定</h3>
               <div class="control-item">
                 <label for="animationSpeedInput" class="control-group__subTitle">再生速度</label>
@@ -259,16 +259,16 @@
                   type="range"
                   id="animationSpeedInput"
                   class="control-item__slider"
-                  min="50"
-                  max="2000"
-                  value="500"
-                  step="50"
+                  min="10"
+                  max="1000"
+                  value="200"
+                  step="10"
                 />
-                <span class="control-item__unit" id="animationSpeedValue">500ms</span>
+                <span class="control-item__unit" id="animationSpeedValue">200ms</span>
               </div>
               <div class="control-item">
                 <small class="control-item__description"
-                  >値が小さいほど高速再生（50ms = 高速、2000ms = 低速）<br />
+                  >値が小さいほど高速再生（←高速 --- 低速→）<br />
                   ※GIF読み込み時は元の速度に合わせて範囲が自動調整されます</small
                 >
               </div>

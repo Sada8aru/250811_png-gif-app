@@ -28,7 +28,7 @@ let scaleInput;
 let aspectRatioSelect;
 let animationSpeedInput;
 let animationSpeedValue;
-const DEFAULT_FRAME_DELAY = 500;
+const DEFAULT_FRAME_DELAY = 200;
 const getCurrentAnimationType = () => {
   if (projectState.transparentImages.length === 0) return null;
   const hasGifFrame = projectState.transparentImages.some((img) => img.frameInfo?.isFromGif);
@@ -225,7 +225,9 @@ const handleTransparentImageUpload = async (files) => {
             projectState.animationSettings.frameDelay = DEFAULT_FRAME_DELAY;
             animationSpeedInput.value = DEFAULT_FRAME_DELAY;
             animationSpeedValue.textContent = `${DEFAULT_FRAME_DELAY}ms`;
-            console.log("GIFのディレイ情報が欠落していたため、デフォルト500msを適用");
+            console.log(
+              `GIFのディレイ情報が欠落していたため、デフォルト${DEFAULT_FRAME_DELAY}msを適用`,
+            );
           }
 
           for (let i = 0; i < frames.length; i++) {
@@ -277,7 +279,7 @@ const handleTransparentImageUpload = async (files) => {
         projectState.animationSettings.frameDelay = DEFAULT_FRAME_DELAY;
         animationSpeedInput.value = DEFAULT_FRAME_DELAY;
         animationSpeedValue.textContent = `${DEFAULT_FRAME_DELAY}ms`;
-        console.log("連番PNGアニメーションをデフォルト500msに設定");
+        console.log("連番PNGアニメーションをデフォルト200msに設定");
       }
     }
 
