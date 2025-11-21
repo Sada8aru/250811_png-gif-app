@@ -1,6 +1,6 @@
 import { getDomRefs } from "./domRefs";
 
-const showError = (message) => {
+const showError = (message: string) => {
   const { errorMessage } = getDomRefs();
   if (!errorMessage) return;
 
@@ -13,7 +13,7 @@ const showError = (message) => {
   }, 5000);
 };
 
-const showSuccess = (message) => {
+const showSuccess = (message: string) => {
   const { errorMessage } = getDomRefs();
   if (!errorMessage) return;
 
