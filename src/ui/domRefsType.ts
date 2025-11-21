@@ -2,12 +2,6 @@
  * もろもろのDOM要素
  */
 export type DomRefs = {
-  backgroundDropzone: HTMLElement | null;
-  transparentDropzone: HTMLElement | null;
-  backgroundButton: HTMLButtonElement | null;
-  transparentButton: HTMLButtonElement | null;
-  backgroundInput: HTMLInputElement | null;
-  transparentInput: HTMLInputElement | null;
   previewContainer: HTMLElement | null;
   previewCanvas: HTMLCanvasElement;
   previewPlaceholder: HTMLElement | null;

@@ -1,12 +1,6 @@
 import { DomRefs } from "./domRefsType";
 
 const queryDomRefs = () => ({
-  backgroundDropzone: document.getElementById("backgroundDropzone"),
-  transparentDropzone: document.getElementById("transparentDropzone"),
-  backgroundButton: document.getElementById("backgroundButton"),
-  transparentButton: document.getElementById("transparentButton"),
-  backgroundInput: document.getElementById("backgroundInput"),
-  transparentInput: document.getElementById("transparentInput"),
   previewContainer: document.getElementById("previewContainer"),
   previewCanvas: document.getElementById("previewCanvas"),
   previewPlaceholder: document.getElementById("previewPlaceholder"),

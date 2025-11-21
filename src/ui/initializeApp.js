@@ -1,5 +1,4 @@
 import { refreshDomRefs, getDomRefs } from "./domRefs";
-import { setupUploadControls } from "./uploadControls";
 import { setupControls } from "./controlPanel";
 import { setupInteractionControls } from "./interactionControls";
 import { setupExportButtons } from "../export/exporters";
@@ -14,7 +13,6 @@ const initializeApp = () => {
   injectBoundingBoxTemplate(refs.boundingBox);
   injectCropBoxTemplate(refs.cropBox);
 
-  setupUploadControls();
   setupControls();
   setupInteractionControls();
   setupExportButtons();
