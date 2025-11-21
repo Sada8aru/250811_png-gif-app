@@ -314,29 +314,7 @@
       </section>
 
       <section class="tab-panel tab-panel--preview" v-show="isPreviewTab" role="tabpanel">
-        <div class="x-preview">
-          <div class="x-preview__header">
-            <div class="x-preview__avatar" aria-hidden="true">X</div>
-            <div class="x-preview__meta">
-              <div class="x-preview__name">Preview Account</div>
-              <div class="x-preview__handle">@preview_account · 1m</div>
-            </div>
-          </div>
-          <div class="x-preview__body">
-            <p class="x-preview__text">画像の編集結果プレビュー</p>
-            <div class="x-preview__media">
-              <img
-                v-if="previewDataUrl"
-                :src="previewDataUrl"
-                alt="編集結果プレビュー"
-                class="x-preview__image"
-              />
-              <div v-else class="x-preview__placeholder">
-                編集タブで画像を読み込むと表示されます
-              </div>
-            </div>
-          </div>
-        </div>
+        <XPreviewPage :previewDataUrl="previewDataUrl" />
       </section>
     </main>
 
@@ -346,6 +324,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { XPreviewPage } from "./components/pages/XPreviewPage.vue";
 import { initializeApp } from "./ui/initializeApp";
 
 type TabKey = "edit" | "preview";
