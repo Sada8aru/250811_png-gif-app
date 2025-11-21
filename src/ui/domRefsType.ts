@@ -7,7 +7,6 @@ export type DomRefs = {
   previewPlaceholder: HTMLElement | null;
   boundingBox: HTMLElement;
   cropBox: HTMLElement;
-  scaleInput: HTMLInputElement | null;
   aspectRatioSelect: HTMLSelectElement | null;
   animationSpeedInput: HTMLInputElement | null;
   animationSpeedValue: HTMLElement | null;
@@ -15,6 +14,4 @@ export type DomRefs = {
   exportGifButton: HTMLButtonElement;
   errorMessage: HTMLElement | null;
   alignmentButtons: NodeListOf<HTMLButtonElement> | null;
-  positionInputX: HTMLInputElement | null;
-  positionInputY: HTMLInputElement | null;
 };

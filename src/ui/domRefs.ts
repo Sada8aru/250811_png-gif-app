@@ -6,7 +6,6 @@ const queryDomRefs = () => ({
   previewPlaceholder: document.getElementById("previewPlaceholder"),
   boundingBox: document.getElementById("boundingBox"),
   cropBox: document.getElementById("cropBox"),
-  scaleInput: document.getElementById("scaleInput"),
   aspectRatioSelect: document.getElementById("aspectRatioSelect"),
   animationSpeedInput: document.getElementById("animationSpeedInput"),
   animationSpeedValue: document.getElementById("animationSpeedValue"),
@@ -14,8 +13,6 @@ const queryDomRefs = () => ({
   exportGifButton: document.getElementById("exportGifButton"),
   errorMessage: document.getElementById("errorMessage"),
   alignmentButtons: document.querySelectorAll("[data-align-target]"),
-  positionInputX: document.getElementById("positionInputX"),
-  positionInputY: document.getElementById("positionInputY"),
 });
 
 let domRefs: DomRefs;

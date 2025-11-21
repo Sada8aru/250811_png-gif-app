@@ -1,6 +1,6 @@
 import { projectState } from "../state/projectState";
 import { getDomRefs } from "./domRefs";
-import { syncPositionInputs, nudgePosition } from "./controlPanel";
+import { nudgePosition } from "./controlPanel";
 import { getGlobalArrowDelta } from "./positionKeymap";
 import {
   updatePreview,
@@ -14,6 +14,7 @@ import {
 } from "../render/previewRenderer";
 import { isCropModeEnabled } from "../state/modeState";
 import { getDisplayMetrics } from "../render/displayMetrics";
+import { emitTransformUiSync, isPositionInputFocusedState } from "../state/transformUiState";
 
 let previewCanvas;
 let boundingBox;
@@ -247,7 +248,7 @@ const handleDrag = (e) => {
     projectState.transformState.position.y += moveY;
 
     updatePreview();
-    syncPositionInputs();
+    emitTransformUiSync();
   } else if (isResizing && resizeHandle) {
     const handleClass = resizeHandle.className;
     let scaleDelta = 0;
@@ -266,9 +267,8 @@ const handleDrag = (e) => {
 
     if (targetScale !== projectState.transformState.scale) {
       projectState.transformState.scale = targetScale;
-      const { scaleInput } = getDomRefs();
-      scaleInput.value = targetScale;
       updatePreview();
+      emitTransformUiSync();
       accumulatedScale = 0;
     }
   }
@@ -541,11 +541,7 @@ const setupInteractionControls = () => {
   setupKeyboardPositionControls();
 };
 
-const isPositionInputActive = () => {
-  const refs = getDomRefs();
-  const activeElement = document.activeElement;
-  return activeElement === refs.positionInputX || activeElement === refs.positionInputY;
-};
+const isPositionInputActive = () => isPositionInputFocusedState();
 
 const handleGlobalArrowKeyDown = (e) => {
   if (

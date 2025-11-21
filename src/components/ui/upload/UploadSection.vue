@@ -57,7 +57,6 @@
 import { ref } from "vue";
 import { projectState } from "../../../state/projectState";
 import { showError } from "../../../ui/notifications";
-import { syncPositionInputs } from "../../../ui/controlPanel";
 import {
   validateImageFile,
   isGifFile,
@@ -73,6 +72,7 @@ import {
 } from "../../../render/previewRenderer";
 import { setCropMode, isCropModeEnabled } from "../../../state/modeState";
 import { getDomRefs } from "../../../ui/domRefs";
+import { emitTransformUiSync } from "../../../state/transformUiState";
 
 defineOptions({ name: "UploadSection" });
 
@@ -215,8 +215,8 @@ const handleBackgroundImageUpload = async (file: File) => {
     });
 
     updatePreview();
+    emitTransformUiSync();
     updateExportButtons();
-    syncPositionInputs();
 
     console.log("背景画像読み込み完了");
   } catch (error) {
@@ -250,15 +250,10 @@ const handleTransparentImageUpload = async (files: File[]) => {
       previousAnimationType === "sequence" &&
       incomingAnimationType === "sequence";
 
-    const { scaleInput, animationSpeedInput, animationSpeedValue } = getDomRefs();
+    const { animationSpeedInput, animationSpeedValue } = getDomRefs();
 
     if (!shouldKeepScale) {
       projectState.transformState.scale = 1;
-      if (scaleInput) {
-        scaleInput.value = "1";
-      }
-    } else if (scaleInput) {
-      scaleInput.value = String(projectState.transformState.scale);
     }
 
     for (const file of validFiles) {
@@ -383,7 +378,7 @@ const handleTransparentImageUpload = async (files: File[]) => {
     });
 
     updatePreview();
-    syncPositionInputs();
+    emitTransformUiSync();
     updateExportButtons();
 
     if (!isCropModeEnabled() && projectState.transparentImages.length > 0) {

@@ -1,4 +1,4 @@
-const injectBoundingBoxTemplate = (container) => {
+export const injectBoundingBoxTemplate = (container: HTMLElement) => {
   if (!container) return;
   container.textContent = "";
 
@@ -17,7 +17,7 @@ const injectBoundingBoxTemplate = (container) => {
   });
 };
 
-const injectCropBoxTemplate = (container) => {
+export const injectCropBoxTemplate = (container: HTMLElement) => {
   if (!container) return;
   container.textContent = "";
 
@@ -35,5 +35,3 @@ const injectCropBoxTemplate = (container) => {
     container.appendChild(overlay);
   });
 };
-
-export { injectBoundingBoxTemplate, injectCropBoxTemplate };

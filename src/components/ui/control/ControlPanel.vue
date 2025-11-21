@@ -64,7 +64,10 @@
               id="scaleInput"
               class="control-item__input"
               min="1"
-              value="1"
+              v-model.number="scaleValue"
+              :disabled="!canAdjustPosition"
+              :aria-valuemin="1"
+              @input="() => handleScaleInput(scaleValue)"
               step="1"
             />
             <span class="control-item__unit">倍</span>
@@ -99,6 +102,19 @@
                       step="1"
                       inputmode="numeric"
                       autocomplete="off"
+                      :value="positionXInput"
+                      :disabled="!canAdjustPosition"
+                      :aria-valuemin="positionAria?.minX ?? undefined"
+                      :aria-valuemax="positionAria?.maxX ?? undefined"
+                      @input="
+                        (e) => commitAbsolutePosition('x', (e.target as HTMLInputElement).value)
+                      "
+                      @change="
+                        (e) => commitAbsolutePosition('x', (e.target as HTMLInputElement).value)
+                      "
+                      @keydown="(e) => handlePositionKeyDown('x', e as KeyboardEvent)"
+                      @focus="handlePositionFocus(true)"
+                      @blur="handlePositionFocus(false)"
                     />
                     <span class="control-item__unit position-field__unit">px</span>
                   </span>
@@ -116,6 +132,19 @@
                       step="1"
                       inputmode="numeric"
                       autocomplete="off"
+                      :value="positionYInput"
+                      :disabled="!canAdjustPosition"
+                      :aria-valuemin="positionAria?.minY ?? undefined"
+                      :aria-valuemax="positionAria?.maxY ?? undefined"
+                      @input="
+                        (e) => commitAbsolutePosition('y', (e.target as HTMLInputElement).value)
+                      "
+                      @change="
+                        (e) => commitAbsolutePosition('y', (e.target as HTMLInputElement).value)
+                      "
+                      @keydown="(e) => handlePositionKeyDown('y', e as KeyboardEvent)"
+                      @focus="handlePositionFocus(true)"
+                      @blur="handlePositionFocus(false)"
                     />
                     <span class="control-item__unit position-field__unit">px</span>
                   </span>
@@ -181,24 +210,43 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import AlignmentGrid from "./AlignmentGrid.vue";
 import { subscribeModeChange, isCropModeEnabled, setCropMode } from "../../../state/modeState";
+import { projectState } from "../../../state/projectState";
+import { getInputKeyDelta } from "../../../ui/positionKeymap";
+import { showError } from "../../../ui/notifications";
+import { nudgePosition } from "../../../ui/controlPanel";
+import { showBoundingBoxTemporarily, updatePreview } from "../../../render/previewRenderer";
+import {
+  emitTransformUiSync,
+  subscribeTransformUiSync,
+  setPositionInputFocused,
+} from "../../../state/transformUiState";
 
 defineOptions({ name: "ControlPanel" });
 
 const isCropMode = ref<boolean>(isCropModeEnabled());
+const scaleValue = ref<number>(projectState.transformState.scale ?? 1);
+const positionXInput = ref<string | number>("");
+const positionYInput = ref<string | number>("");
 
 type ModeKey = "edit" | "crop";
 
 let unsubscribeModeChange: (() => void) | null = null;
+let unsubscribeTransformUi: (() => void) | null = null;
 
 onMounted(() => {
   isCropMode.value = isCropModeEnabled();
   unsubscribeModeChange = subscribeModeChange((nextMode) => {
     isCropMode.value = nextMode;
   });
+  refreshTransformInputs();
+  unsubscribeTransformUi = subscribeTransformUiSync(() => {
+    refreshTransformInputs();
+  });
 });
 
 onBeforeUnmount(() => {
   unsubscribeModeChange?.();
+  unsubscribeTransformUi?.();
 });
 
 const handleModeClick = (mode: ModeKey) => {
@@ -217,6 +265,154 @@ const cropButtonClass = computed(() => ({
 
 const editAriaPressed = computed(() => (!isCropMode.value ? "true" : "false"));
 const cropAriaPressed = computed(() => (isCropMode.value ? "true" : "false"));
+
+const canAdjustPosition = ref<boolean>(false);
+const positionAria = ref<{ minX: number; minY: number; maxX: number; maxY: number } | null>(null);
+
+const getPositionContext = () => {
+  const bg = projectState.backgroundImage;
+  const baseImage = projectState.transparentImages[0];
+  if (!bg || !baseImage?.metadata) return null;
+
+  const scale = projectState.transformState.scale;
+  const overlayWidth = baseImage.metadata.width * scale;
+  const overlayHeight = baseImage.metadata.height * scale;
+
+  const cropArea = projectState.transformState.cropArea;
+  const bounds = cropArea
+    ? { x: cropArea.x, y: cropArea.y, width: cropArea.width, height: cropArea.height }
+    : { x: 0, y: 0, width: bg.metadata.width, height: bg.metadata.height };
+
+  const absoluteX = projectState.transformState.position.x + (bg.metadata.width - overlayWidth) / 2;
+  const absoluteY =
+    projectState.transformState.position.y + (bg.metadata.height - overlayHeight) / 2;
+
+  return {
+    bg,
+    bounds,
+    overlaySize: { width: overlayWidth, height: overlayHeight },
+    absoluteX,
+    absoluteY,
+  };
+};
+
+const clampToBounds = (value: number, size: number, boundsStart: number, boundsSize: number) => {
+  const min = boundsStart;
+  const max = boundsStart + boundsSize - size;
+  if (max < min) {
+    return boundsStart + (boundsSize - size) / 2;
+  }
+  return Math.min(Math.max(value, min), max);
+};
+
+const refreshTransformInputs = () => {
+  scaleValue.value = projectState.transformState.scale ?? 1;
+  const context = getPositionContext();
+  canAdjustPosition.value = Boolean(context);
+
+  if (!context) {
+    positionAria.value = null;
+    positionXInput.value = "";
+    positionYInput.value = "";
+    return;
+  }
+
+  const maxX = context.bounds.x + context.bounds.width - context.overlaySize.width;
+  const maxY = context.bounds.y + context.bounds.height - context.overlaySize.height;
+  positionAria.value = {
+    minX: Math.round(context.bounds.x),
+    minY: Math.round(context.bounds.y),
+    maxX: Math.round(maxX),
+    maxY: Math.round(maxY),
+  };
+  positionXInput.value = Math.round(context.absoluteX);
+  positionYInput.value = Math.round(context.absoluteY);
+};
+
+const handleScaleInput = (value: number) => {
+  if (Number.isNaN(value) || value < 1) return;
+  projectState.transformState.scale = Math.round(value);
+  scaleValue.value = projectState.transformState.scale;
+  updatePreview();
+  checkScaleWarning();
+  emitTransformUiSync();
+
+  if (!isCropMode.value && projectState.transparentImages.length > 0) {
+    showBoundingBoxTemporarily(1000);
+  }
+};
+
+const commitAbsolutePosition = (axis: "x" | "y", rawValue: string | number) => {
+  const parsedValue = Number.parseInt(String(rawValue), 10);
+  if (Number.isNaN(parsedValue)) {
+    refreshTransformInputs();
+    return;
+  }
+
+  const context = getPositionContext();
+  if (!context) {
+    refreshTransformInputs();
+    return;
+  }
+
+  const nextAbsoluteX = axis === "x" ? parsedValue : context.absoluteX;
+  const nextAbsoluteY = axis === "y" ? parsedValue : context.absoluteY;
+
+  const clampedX = clampToBounds(
+    nextAbsoluteX,
+    context.overlaySize.width,
+    context.bounds.x,
+    context.bounds.width,
+  );
+  const clampedY = clampToBounds(
+    nextAbsoluteY,
+    context.overlaySize.height,
+    context.bounds.y,
+    context.bounds.height,
+  );
+
+  projectState.transformState.position.x =
+    clampedX - (context.bg.metadata.width - context.overlaySize.width) / 2;
+  projectState.transformState.position.y =
+    clampedY - (context.bg.metadata.height - context.overlaySize.height) / 2;
+
+  refreshTransformInputs();
+  emitTransformUiSync();
+  updatePreview();
+  showBoundingBoxTemporarily(1000);
+};
+
+const handlePositionKeyDown = (axis: "x" | "y", e: KeyboardEvent) => {
+  const delta = getInputKeyDelta(e.key, e.shiftKey);
+  if (delta === null) return;
+  e.preventDefault();
+  nudgePosition(axis, delta);
+};
+
+const checkScaleWarning = () => {
+  if (!projectState.backgroundImage || projectState.transparentImages.length === 0) {
+    return;
+  }
+
+  const transparentImg = projectState.transparentImages[0];
+  const scale = projectState.transformState.scale;
+
+  const scaledWidth = transparentImg.metadata.width * scale;
+  const scaledHeight = transparentImg.metadata.height * scale;
+
+  if (
+    scaledWidth > projectState.outputSettings.maxWidth ||
+    scaledHeight > projectState.outputSettings.maxHeight
+  ) {
+    showError(
+      `拡大後のサイズ（${scaledWidth}×${scaledHeight}px）が出力サイズ制限（${projectState.outputSettings.maxWidth}×${projectState.outputSettings.maxHeight}px）を超えています。`,
+    );
+  }
+};
+
+const handlePositionFocus = (focused: boolean) => {
+  setPositionInputFocused(focused);
+};
 </script>
 
 <style scoped>
