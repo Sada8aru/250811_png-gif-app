@@ -1,9 +1,9 @@
-const FINE_STEP = 1;
-const COARSE_STEP = 10;
+export const FINE_STEP = 1;
+export const COARSE_STEP = 10;
 
-const getKeyboardStep = (shouldUseCoarse) => (shouldUseCoarse ? COARSE_STEP : FINE_STEP);
+const getKeyboardStep = (shouldUseCoarse: boolean) => (shouldUseCoarse ? COARSE_STEP : FINE_STEP);
 
-const getInputKeyDelta = (key, withShift) => {
+export const getInputKeyDelta = (key: string, withShift: boolean) => {
   switch (key) {
     case "ArrowUp":
       return getKeyboardStep(withShift);
@@ -14,7 +14,7 @@ const getInputKeyDelta = (key, withShift) => {
   }
 };
 
-const getGlobalArrowDelta = (key, withShift) => {
+export const getGlobalArrowDelta = (key: string, withShift: boolean) => {
   const step = getKeyboardStep(withShift);
 
   switch (key) {
@@ -30,5 +30,3 @@ const getGlobalArrowDelta = (key, withShift) => {
       return null;
   }
 };
-
-export { FINE_STEP, COARSE_STEP, getInputKeyDelta, getGlobalArrowDelta };
