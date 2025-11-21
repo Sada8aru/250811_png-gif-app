@@ -41,6 +41,7 @@
 import { computed, onMounted, ref } from "vue";
 import EditorPage from "./components/pages/EditorPage.vue";
 import { XPreviewPage } from "./components/pages/XPreviewPage.vue";
+import { generatePreviewDataUrl } from "./render/previewRenderer";
 import { initializeApp } from "./ui/initializeApp";
 
 type TabKey = "edit" | "preview";
@@ -59,17 +60,7 @@ const setTab = (tab: TabKey) => {
 };
 
 const capturePreviewSnapshot = () => {
-  const canvas = document.getElementById("previewCanvas") as HTMLCanvasElement | null;
-  if (!canvas) {
-    previewDataUrl.value = "";
-    return;
-  }
-
-  try {
-    previewDataUrl.value = canvas.toDataURL("image/png");
-  } catch {
-    previewDataUrl.value = "";
-  }
+  previewDataUrl.value = generatePreviewDataUrl();
 };
 
 const appClass = computed(() => ({

@@ -488,6 +488,53 @@ const applyModeChange = (nextState) => {
   }
 };
 
+const generatePreviewDataUrl = () => {
+  if (!projectState.backgroundImage) return "";
+
+  const bg = projectState.backgroundImage;
+  const cropArea = projectState.transformState.cropArea;
+  const scale = projectState.transformState.scale;
+  const pos = projectState.transformState.position;
+
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+  if (cropArea) {
+    canvas.width = cropArea.width;
+    canvas.height = cropArea.height;
+    ctx.drawImage(
+      bg.image,
+      cropArea.x,
+      cropArea.y,
+      cropArea.width,
+      cropArea.height,
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+    );
+  } else {
+    canvas.width = bg.metadata.width;
+    canvas.height = bg.metadata.height;
+    ctx.drawImage(bg.image, 0, 0);
+  }
+
+  if (projectState.transparentImages.length > 0) {
+    const transparentImg = projectState.transparentImages[0];
+    const imagePos = calculateTransparentImagePosition(transparentImg, scale, pos, bg, cropArea);
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(transparentImg.image, imagePos.x, imagePos.y, imagePos.width, imagePos.height);
+  }
+
+  try {
+    return canvas.toDataURL("image/png");
+  } catch (error) {
+    console.error("プレビュー画像生成エラー:", error);
+    return "";
+  }
+};
+
 export {
   initRendererDomRefs,
   calculateTransparentImagePosition,
@@ -501,4 +548,5 @@ export {
   getAspectRatio,
   setBoundingBoxSelected,
   isBoundingBoxActive,
+  generatePreviewDataUrl,
 };
