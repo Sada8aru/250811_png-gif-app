@@ -1,3 +1,5 @@
+import { DomRefs } from "./domRefsType";
+
 const queryDomRefs = () => ({
   backgroundDropzone: document.getElementById("backgroundDropzone"),
   transparentDropzone: document.getElementById("transparentDropzone"),
@@ -26,13 +28,13 @@ const queryDomRefs = () => ({
   positionInputY: document.getElementById("positionInputY"),
 });
 
-let domRefs;
+let domRefs: DomRefs;
 
-const refreshDomRefs = () => {
-  domRefs = queryDomRefs();
+const refreshDomRefs = (): DomRefs => {
+  domRefs = queryDomRefs() as DomRefs; // 型エラーの解決は面倒なのでasで保証
   return domRefs;
 };
 
-const getDomRefs = () => domRefs ?? refreshDomRefs();
+const getDomRefs = (): DomRefs => domRefs ?? refreshDomRefs();
 
 export { getDomRefs, refreshDomRefs };
