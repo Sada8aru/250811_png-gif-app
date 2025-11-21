@@ -7,10 +7,6 @@ export type DomRefs = {
   previewPlaceholder: HTMLElement | null;
   boundingBox: HTMLElement;
   cropBox: HTMLElement;
-  modeToggleEdit: HTMLButtonElement | null;
-  modeToggleCrop: HTMLButtonElement | null;
-  cropControls: HTMLElement | null;
-  editModeControls: NodeListOf<HTMLElement> | null;
   scaleInput: HTMLInputElement | null;
   aspectRatioSelect: HTMLSelectElement | null;
   animationSpeedInput: HTMLInputElement | null;

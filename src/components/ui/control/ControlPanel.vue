@@ -7,9 +7,9 @@
           <div class="mode-toggle" role="group" aria-label="操作モード">
             <button
               id="modeToggleEdit"
-              class="mode-toggle__button mode-toggle__button--active"
+              :class="editButtonClass"
               type="button"
-              aria-pressed="true"
+              :aria-pressed="editAriaPressed"
               data-mode="edit"
               @click="handleModeClick('edit')"
             >
@@ -17,9 +17,9 @@
             </button>
             <button
               id="modeToggleCrop"
-              class="mode-toggle__button"
+              :class="cropButtonClass"
               type="button"
-              aria-pressed="false"
+              :aria-pressed="cropAriaPressed"
               data-mode="crop"
               @click="handleModeClick('crop')"
             >
@@ -178,7 +178,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import AlignmentGrid from "./AlignmentGrid.vue";
 import { subscribeModeChange, isCropModeEnabled, setCropMode } from "../../../state/modeState";
 
@@ -204,6 +204,19 @@ onBeforeUnmount(() => {
 const handleModeClick = (mode: ModeKey) => {
   setCropMode(mode === "crop");
 };
+
+const editButtonClass = computed(() => ({
+  "mode-toggle__button": true,
+  "mode-toggle__button--active": !isCropMode.value,
+}));
+
+const cropButtonClass = computed(() => ({
+  "mode-toggle__button": true,
+  "mode-toggle__button--active": isCropMode.value,
+}));
+
+const editAriaPressed = computed(() => (!isCropMode.value ? "true" : "false"));
+const cropAriaPressed = computed(() => (isCropMode.value ? "true" : "false"));
 </script>
 
 <style scoped>

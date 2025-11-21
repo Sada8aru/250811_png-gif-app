@@ -192,7 +192,6 @@ const checkScaleWarning = () => {
     return;
   }
 
-  const bg = projectState.backgroundImage;
   const transparentImg = projectState.transparentImages[0];
   const scale = projectState.transformState.scale;
 

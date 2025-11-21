@@ -7,10 +7,6 @@ let previewCanvas;
 let previewPlaceholder;
 let boundingBox;
 let cropBox;
-let modeToggleEditButton;
-let modeToggleCropButton;
-let cropControls;
-let editModeControlGroups = [];
 let exportPngButton;
 let exportGifButton;
 
@@ -20,15 +16,9 @@ const initRendererDomRefs = () => {
   previewPlaceholder = refs.previewPlaceholder;
   boundingBox = refs.boundingBox;
   cropBox = refs.cropBox;
-  modeToggleEditButton = refs.modeToggleEdit;
-  modeToggleCropButton = refs.modeToggleCrop;
-  cropControls = refs.cropControls;
-  editModeControlGroups = Array.from(refs.editModeControls ?? []);
   exportPngButton = refs.exportPngButton;
   exportGifButton = refs.exportGifButton;
-  updateModeToggleAppearance();
   isCropMode = isCropModeEnabled();
-  setEditModeControlsVisibility(!isCropMode);
 
   subscribeModeChange(applyModeChange);
 };
@@ -42,33 +32,6 @@ const setBoundingBoxSelected = (selected) => {
   isBoundingBoxSelected = selected;
 };
 const isBoundingBoxActive = () => isBoundingBoxSelected;
-
-const updateModeToggleAppearance = () => {
-  if (!modeToggleEditButton || !modeToggleCropButton) return;
-
-  if (isCropMode) {
-    modeToggleCropButton.classList.add("mode-toggle__button--active");
-    modeToggleCropButton.setAttribute("aria-pressed", "true");
-    modeToggleEditButton.classList.remove("mode-toggle__button--active");
-    modeToggleEditButton.setAttribute("aria-pressed", "false");
-  } else {
-    modeToggleEditButton.classList.add("mode-toggle__button--active");
-    modeToggleEditButton.setAttribute("aria-pressed", "true");
-    modeToggleCropButton.classList.remove("mode-toggle__button--active");
-    modeToggleCropButton.setAttribute("aria-pressed", "false");
-  }
-};
-
-const setEditModeControlsVisibility = (shouldShow) => {
-  editModeControlGroups.forEach((group) => {
-    if (!group) return;
-    group.setAttribute("aria-hidden", shouldShow ? "false" : "true");
-  });
-
-  if (cropControls) {
-    cropControls.setAttribute("aria-hidden", shouldShow ? "true" : "false");
-  }
-};
 
 const calculateTransparentImagePosition = (
   transparentImg,
@@ -505,8 +468,6 @@ const applyModeChange = (nextState) => {
   isCropMode = Boolean(nextState);
 
   if (isCropMode) {
-    setEditModeControlsVisibility(false);
-
     boundingBox.style.display = "none";
     isBoundingBoxSelected = false;
 
@@ -519,17 +480,12 @@ const applyModeChange = (nextState) => {
 
     scheduleCropBoxUpdate();
   } else {
-    setEditModeControlsVisibility(true);
-
     cropBox.style.display = "none";
     isBoundingBoxSelected = false;
 
     updateBoundingBox();
     updatePreview();
   }
-
-  updateModeToggleAppearance();
-  setEditModeControlsVisibility(!isCropMode);
 };
 
 export {
