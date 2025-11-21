@@ -32,3 +32,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 - ネスト記法の使用を推奨
 - rgb()関数の使用を推奨。rgba()は非推奨。
 - メディアクエリは論理演算子を使用した範囲構文の使用を推奨。例：`@media (width <= 1000px)`
+
+### JS
+- 新規実装・変更時はTypeScriptの使用を推奨
+- Vueはscript setup構文の使用を推奨

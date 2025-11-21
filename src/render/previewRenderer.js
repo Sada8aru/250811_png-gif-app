@@ -1,4 +1,5 @@
 import { projectState } from "../state/projectState";
+import { isCropModeEnabled, subscribeModeChange } from "../state/modeState";
 import { getDomRefs } from "../ui/domRefs";
 import { getDisplayMetrics, toDisplayRect } from "./displayMetrics";
 
@@ -26,7 +27,10 @@ const initRendererDomRefs = () => {
   exportPngButton = refs.exportPngButton;
   exportGifButton = refs.exportGifButton;
   updateModeToggleAppearance();
+  isCropMode = isCropModeEnabled();
   setEditModeControlsVisibility(!isCropMode);
+
+  subscribeModeChange(applyModeChange);
 };
 
 let animationInterval = null;
@@ -58,9 +62,12 @@ const updateModeToggleAppearance = () => {
 const setEditModeControlsVisibility = (shouldShow) => {
   editModeControlGroups.forEach((group) => {
     if (!group) return;
-    group.style.display = shouldShow ? "" : "none";
     group.setAttribute("aria-hidden", shouldShow ? "false" : "true");
   });
+
+  if (cropControls) {
+    cropControls.setAttribute("aria-hidden", shouldShow ? "true" : "false");
+  }
 };
 
 const calculateTransparentImagePosition = (
@@ -488,22 +495,16 @@ const updateCropBox = () => {
   cropBox.style.height = displayRect.height + "px";
 };
 
-/**
- * 操作モードを切り替える。
- * @param {boolean} shouldEnableCrop トリミングモードを有効にする場合はtrue
- */
-const setCropMode = (shouldEnableCrop) => {
-  const nextState = Boolean(shouldEnableCrop);
+const scheduleCropBoxUpdate = () => {
+  requestAnimationFrame(() => {
+    updateCropBox();
+  });
+};
 
-  if (isCropMode === nextState) {
-    updateModeToggleAppearance();
-    return;
-  }
-
-  isCropMode = nextState;
+const applyModeChange = (nextState) => {
+  isCropMode = Boolean(nextState);
 
   if (isCropMode) {
-    cropControls.style.display = "block";
     setEditModeControlsVisibility(false);
 
     boundingBox.style.display = "none";
@@ -516,9 +517,8 @@ const setCropMode = (shouldEnableCrop) => {
       renderCropModePreview();
     }
 
-    updateCropBox();
+    scheduleCropBoxUpdate();
   } else {
-    cropControls.style.display = "none";
     setEditModeControlsVisibility(true);
 
     cropBox.style.display = "none";
@@ -529,16 +529,8 @@ const setCropMode = (shouldEnableCrop) => {
   }
 
   updateModeToggleAppearance();
+  setEditModeControlsVisibility(!isCropMode);
 };
-
-/**
- * トグル操作用のヘルパー。
- */
-const toggleCropMode = () => {
-  setCropMode(!isCropMode);
-};
-
-const isCropModeEnabled = () => isCropMode;
 
 export {
   initRendererDomRefs,
@@ -551,9 +543,6 @@ export {
   updateBoundingBox,
   updateCropBox,
   getAspectRatio,
-  setCropMode,
-  toggleCropMode,
-  isCropModeEnabled,
   setBoundingBoxSelected,
   isBoundingBoxActive,
 };

@@ -11,6 +11,7 @@
               type="button"
               aria-pressed="true"
               data-mode="edit"
+              @click="handleModeClick('edit')"
             >
               ✏️ 編集
             </button>
@@ -20,6 +21,7 @@
               type="button"
               aria-pressed="false"
               data-mode="crop"
+              @click="handleModeClick('crop')"
             >
               背景トリミング
             </button>
@@ -27,7 +29,12 @@
         </div>
       </div>
 
-      <div class="control-group" id="cropControls" style="display: none">
+      <div
+        class="control-group"
+        id="cropControls"
+        v-show="isCropMode"
+        :aria-hidden="isCropMode ? 'false' : 'true'"
+      >
         <h3 class="control-group__title">アスペクト比</h3>
         <div class="control-item">
           <select id="aspectRatioSelect" class="control-item__select">
@@ -42,7 +49,12 @@
         </div>
       </div>
 
-      <div class="control-group" data-mode-panel="edit">
+      <div
+        class="control-group"
+        data-mode-panel="edit"
+        v-show="!isCropMode"
+        :aria-hidden="isCropMode ? 'true' : 'false'"
+      >
         <h3 class="control-group__title">画像</h3>
         <div class="control-item">
           <label for="scaleInput" class="control-group__subTitle">サイズ</label>
@@ -60,7 +72,12 @@
         </div>
       </div>
 
-      <div class="control-group" data-mode-panel="edit">
+      <div
+        class="control-group"
+        data-mode-panel="edit"
+        v-show="!isCropMode"
+        :aria-hidden="isCropMode ? 'true' : 'false'"
+      >
         <div class="control-group_row">
           <div class="control-group_rowBlock">
             <h4 class="control-group__subTitle">整列</h4>
@@ -109,7 +126,12 @@
         </div>
       </div>
 
-      <div class="control-group" data-mode-panel="edit">
+      <div
+        class="control-group"
+        data-mode-panel="edit"
+        v-show="!isCropMode"
+        :aria-hidden="isCropMode ? 'true' : 'false'"
+      >
         <h3 class="control-group__title">アニメーション設定</h3>
         <div class="control-item">
           <label for="animationSpeedInput" class="control-group__subTitle">再生速度</label>
@@ -155,18 +177,33 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import AlignmentGrid from "./AlignmentGrid.vue";
+import { subscribeModeChange, isCropModeEnabled, setCropMode } from "../../../state/modeState";
 
-export const ControlPanel = defineComponent({
-  name: "ControlPanel",
-  components: {
-    AlignmentGrid,
-  },
+defineOptions({ name: "ControlPanel" });
+
+const isCropMode = ref<boolean>(isCropModeEnabled());
+
+type ModeKey = "edit" | "crop";
+
+let unsubscribeModeChange: (() => void) | null = null;
+
+onMounted(() => {
+  isCropMode.value = isCropModeEnabled();
+  unsubscribeModeChange = subscribeModeChange((nextMode) => {
+    isCropMode.value = nextMode;
+  });
 });
 
-export default ControlPanel;
+onBeforeUnmount(() => {
+  unsubscribeModeChange?.();
+});
+
+const handleModeClick = (mode: ModeKey) => {
+  setCropMode(mode === "crop");
+};
 </script>
 
 <style scoped>

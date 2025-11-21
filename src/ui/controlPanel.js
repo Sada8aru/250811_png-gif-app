@@ -6,14 +6,11 @@ import {
   updatePreview,
   showBoundingBoxTemporarily,
   updateCropBox,
-  isCropModeEnabled,
-  setCropMode,
   alignTransparentLayer,
 } from "../render/previewRenderer";
+import { isCropModeEnabled } from "../state/modeState";
 
 let scaleInput;
-let modeToggleEdit;
-let modeToggleCrop;
 let animationSpeedInput;
 let animationSpeedValue;
 let aspectRatioSelect;
@@ -24,8 +21,6 @@ let positionInputY;
 const initControlDomRefs = () => {
   const refs = getDomRefs();
   scaleInput = refs.scaleInput;
-  modeToggleEdit = refs.modeToggleEdit;
-  modeToggleCrop = refs.modeToggleCrop;
   animationSpeedInput = refs.animationSpeedInput;
   animationSpeedValue = refs.animationSpeedValue;
   aspectRatioSelect = refs.aspectRatioSelect;
@@ -231,14 +226,6 @@ const setupControls = () => {
     if (!isCropModeEnabled() && projectState.transparentImages.length > 0) {
       showBoundingBoxTemporarily(1000);
     }
-  });
-
-  modeToggleEdit.addEventListener("click", () => {
-    setCropMode(false);
-  });
-
-  modeToggleCrop.addEventListener("click", () => {
-    setCropMode(true);
   });
 
   animationSpeedInput.addEventListener("input", (e) => {

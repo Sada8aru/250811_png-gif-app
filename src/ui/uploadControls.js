@@ -12,11 +12,10 @@ import {
 import {
   updatePreview,
   updateExportButtons,
-  setCropMode,
-  isCropModeEnabled,
   updateBoundingBox,
   setBoundingBoxSelected,
 } from "../render/previewRenderer";
+import { setCropMode, isCropModeEnabled } from "../state/modeState";
 
 let backgroundDropzone;
 let transparentDropzone;

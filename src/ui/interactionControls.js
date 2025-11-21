@@ -8,11 +8,11 @@ import {
   updateBoundingBox,
   updateCropBox,
   calculateTransparentImagePosition,
-  isCropModeEnabled,
   setBoundingBoxSelected,
   isBoundingBoxActive,
   getAspectRatio,
 } from "../render/previewRenderer";
+import { isCropModeEnabled } from "../state/modeState";
 import { getDisplayMetrics } from "../render/displayMetrics";
 
 let previewCanvas;
