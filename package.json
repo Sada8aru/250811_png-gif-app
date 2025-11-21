@@ -4,20 +4,25 @@
     "build": "vite build --emptyOutDir",
     "preview": "vite preview",
     "lint": "npm run lint:eslint && npm run lint:prettier",
-    "lint:eslint": "eslint \"src/**/*.{ts,tsx}\"",
-    "lint:prettier": "prettier --check \"{src,public}/**/*.{js,ts,json,css,md}\"",
-    "format": "prettier --write \"{src,public}/**/*.{js,ts,json,css,md}\"",
+    "lint:eslint": "eslint \"src/**/*.{ts,tsx,vue}\"",
+    "lint:prettier": "prettier --check \"{src,public}/**/*.{js,ts,json,css,md,vue}\"",
+    "format": "prettier --write \"{src,public}/**/*.{js,ts,json,css,md,vue}\"",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "gif.js": "^0.2.0",
     "gifuct-js": "^2.1.2",
-    "omggif": "^1.0.10"
+    "omggif": "^1.0.10",
+    "vue": "^3.5.24"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/compiler-sfc": "^3.5.24",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.6.0",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.2.1",

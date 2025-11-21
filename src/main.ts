@@ -1,5 +1,4 @@
-import { initializeApp } from "./ui/initializeApp";
+import { createApp } from "vue";
+import App from "./App.vue";
 
-document.addEventListener("DOMContentLoaded", () => {
-  initializeApp();
-});
+createApp(App).mount("#app");
