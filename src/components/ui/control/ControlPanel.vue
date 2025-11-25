@@ -211,7 +211,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import AlignmentGrid from "./AlignmentGrid.vue";
 import { subscribeModeChange, isCropModeEnabled, setCropMode } from "../../../state/modeState";
 import { projectState } from "../../../state/projectState";
-import { getInputKeyDelta } from "../../../ui/positionKeymap";
+import { ArrowKey, getInputKeyDelta } from "../../../ui/positionKeymap";
 import { showError } from "../../../ui/notifications";
 import { nudgePosition } from "../../../ui/controlPanel";
 import { showBoundingBoxTemporarily, updatePreview } from "../../../render/previewRenderer";
@@ -220,6 +220,7 @@ import {
   subscribeTransformUiSync,
   setPositionInputFocused,
 } from "../../../state/transformUiState";
+import { Axis } from "../../../ui/controlPanel";
 
 defineOptions({ name: "ControlPanel" });
 
@@ -342,7 +343,7 @@ const handleScaleInput = (value: number) => {
   }
 };
 
-const commitAbsolutePosition = (axis: "x" | "y", rawValue: string | number) => {
+const commitAbsolutePosition = (axis: Axis, rawValue: string | number) => {
   const parsedValue = Number.parseInt(String(rawValue), 10);
   if (Number.isNaN(parsedValue)) {
     refreshTransformInputs();
@@ -382,8 +383,12 @@ const commitAbsolutePosition = (axis: "x" | "y", rawValue: string | number) => {
   showBoundingBoxTemporarily(1000);
 };
 
-const handlePositionKeyDown = (axis: "x" | "y", e: KeyboardEvent) => {
-  const delta = getInputKeyDelta(e.key, e.shiftKey);
+const handlePositionKeyDown = (axis: Axis, e: KeyboardEvent) => {
+  if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+    return;
+  }
+  const arrowKey = e.key as ArrowKey;
+  const delta = getInputKeyDelta(arrowKey, e.shiftKey);
   if (delta === null) return;
   e.preventDefault();
   nudgePosition(axis, delta);

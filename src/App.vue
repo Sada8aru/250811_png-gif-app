@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import EditorPage from "./components/pages/EditorPage.vue";
-import { XPreviewPage } from "./components/pages/XPreviewPage.vue";
+import XPreviewPage from "./components/pages/XPreviewPage.vue";
 import { generatePreviewDataUrl } from "./render/previewRenderer";
 import { initializeApp } from "./ui/initializeApp";
 

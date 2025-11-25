@@ -1,9 +1,13 @@
+import { Axis } from "./controlPanel";
+
 export const FINE_STEP = 1;
 export const COARSE_STEP = 10;
 
 const getKeyboardStep = (shouldUseCoarse: boolean) => (shouldUseCoarse ? COARSE_STEP : FINE_STEP);
 
-export const getInputKeyDelta = (key: string, withShift: boolean) => {
+export type ArrowKey = "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight";
+
+export const getInputKeyDelta = (key: ArrowKey, withShift: boolean) => {
   switch (key) {
     case "ArrowUp":
       return getKeyboardStep(withShift);
@@ -14,7 +18,10 @@ export const getInputKeyDelta = (key: string, withShift: boolean) => {
   }
 };
 
-export const getGlobalArrowDelta = (key: string, withShift: boolean) => {
+export const getGlobalArrowDelta = (
+  key: ArrowKey,
+  withShift: boolean,
+): { axis: Axis; delta: number } | null => {
   const step = getKeyboardStep(withShift);
 
   switch (key) {

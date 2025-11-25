@@ -5,7 +5,7 @@ import { setupExportButtons } from "../export/exporters";
 import { injectBoundingBoxTemplate, injectCropBoxTemplate } from "../templates/previewHandles";
 import { initRendererDomRefs } from "../render/previewRenderer";
 
-const initializeApp = () => {
+export const initializeApp = () => {
   refreshDomRefs();
   initRendererDomRefs();
 
@@ -17,5 +17,3 @@ const initializeApp = () => {
   setupInteractionControls();
   setupExportButtons();
 };
-
-export { initializeApp };

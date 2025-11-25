@@ -8,13 +8,22 @@ import {
 } from "../render/previewRenderer";
 import { isCropModeEnabled } from "../state/modeState";
 import { emitTransformUiSync } from "../state/transformUiState";
+import { type ProjectImage, type CropArea } from "../types/media";
 
-let animationSpeedInput;
-let animationSpeedValue;
-let aspectRatioSelect;
-let alignmentButtons = [];
+type PositionContext = {
+  bg: ProjectImage;
+  bounds: CropArea;
+  overlaySize: { width: number; height: number };
+  absoluteX: number;
+  absoluteY: number;
+};
 
-const initControlDomRefs = () => {
+let animationSpeedInput: HTMLInputElement | null;
+let animationSpeedValue: HTMLElement | null;
+let aspectRatioSelect: HTMLSelectElement | null;
+let alignmentButtons: HTMLButtonElement[] = [];
+
+const initControlDomRefs = (): void => {
   const refs = getDomRefs();
   animationSpeedInput = refs.animationSpeedInput;
   animationSpeedValue = refs.animationSpeedValue;
@@ -22,11 +31,16 @@ const initControlDomRefs = () => {
   alignmentButtons = Array.from(refs.alignmentButtons ?? []);
 };
 
-const canAdjustPosition = () =>
+const canAdjustPosition = (): boolean =>
   Boolean(projectState.backgroundImage && projectState.transparentImages.length > 0);
 
-const getPositionContext = () => {
-  if (!canAdjustPosition()) return null;
+const toBounds = (cropArea: CropArea | null, bg: ProjectImage): CropArea =>
+  cropArea
+    ? { x: cropArea.x, y: cropArea.y, width: cropArea.width, height: cropArea.height }
+    : { x: 0, y: 0, width: bg.metadata.width, height: bg.metadata.height };
+
+const getPositionContext = (): PositionContext | null => {
+  if (!canAdjustPosition() || !projectState.backgroundImage) return null;
 
   const bg = projectState.backgroundImage;
   const baseImage = projectState.transparentImages[0];
@@ -37,9 +51,7 @@ const getPositionContext = () => {
   const overlayHeight = baseImage.metadata.height * scale;
 
   const cropArea = projectState.transformState.cropArea;
-  const bounds = cropArea
-    ? { x: cropArea.x, y: cropArea.y, width: cropArea.width, height: cropArea.height }
-    : { x: 0, y: 0, width: bg.metadata.width, height: bg.metadata.height };
+  const bounds = toBounds(cropArea, bg);
 
   const absoluteX = projectState.transformState.position.x + (bg.metadata.width - overlayWidth) / 2;
   const absoluteY =
@@ -54,7 +66,7 @@ const getPositionContext = () => {
   };
 };
 
-const clampToBounds = (value, size, boundsStart, boundsSize) => {
+const clampToBounds = (value: number, size: number, boundsStart: number, boundsSize: number) => {
   const min = boundsStart;
   const max = boundsStart + boundsSize - size;
   if (max < min) {
@@ -63,7 +75,11 @@ const clampToBounds = (value, size, boundsStart, boundsSize) => {
   return Math.min(Math.max(value, min), max);
 };
 
-const commitAbsolutePosition = (context, nextAbsoluteX, nextAbsoluteY) => {
+const commitAbsolutePosition = (
+  context: PositionContext,
+  nextAbsoluteX: number,
+  nextAbsoluteY: number,
+): void => {
   const clampedX = clampToBounds(
     nextAbsoluteX,
     context.overlaySize.width,
@@ -87,7 +103,12 @@ const commitAbsolutePosition = (context, nextAbsoluteX, nextAbsoluteY) => {
   emitTransformUiSync();
 };
 
-const nudgePosition = (axis, delta) => {
+export type Axis = "x" | "y";
+
+/**
+ * オーバーレイ画像を指定軸に微移動する。
+ */
+export const nudgePosition = (axis: Axis, delta: number): void => {
   const context = getPositionContext();
   if (!context) return;
 
@@ -99,13 +120,20 @@ const nudgePosition = (axis, delta) => {
 /**
  * 調整パネルのコントロールを初期化する。
  */
-const setupControls = () => {
+export const setupControls = (): void => {
   initControlDomRefs();
+  const speedInput = animationSpeedInput;
+  const speedValue = animationSpeedValue;
+  const ratioSelect = aspectRatioSelect;
+  if (!speedInput || !speedValue || !ratioSelect) return;
 
-  animationSpeedInput.addEventListener("input", (e) => {
-    const speed = parseInt(e.target.value, 10);
+  speedInput.addEventListener("input", (e: Event) => {
+    const target = e.target as HTMLInputElement | null;
+    if (!target) return;
+
+    const speed = parseInt(target.value, 10);
     projectState.animationSettings.frameDelay = speed;
-    animationSpeedValue.textContent = `${speed}ms`;
+    speedValue.textContent = `${speed}ms`;
     console.log("アニメーション速度変更:", speed + "ms");
 
     if (projectState.transparentImages.length > 1) {
@@ -113,8 +141,11 @@ const setupControls = () => {
     }
   });
 
-  aspectRatioSelect.addEventListener("change", (e) => {
-    const ratio = e.target.value;
+  ratioSelect.addEventListener("change", (e: Event) => {
+    const target = e.target as HTMLSelectElement | null;
+    if (!target) return;
+
+    const ratio = target.value;
     projectState.transformState.aspectRatio = ratio;
     console.log("アスペクト比変更:", ratio);
 
@@ -136,5 +167,3 @@ const setupControls = () => {
     });
   });
 };
-
-export { setupControls, nudgePosition };

@@ -1,7 +1,7 @@
 import { projectState } from "../state/projectState";
 import { getDomRefs } from "./domRefs";
 import { nudgePosition } from "./controlPanel";
-import { getGlobalArrowDelta } from "./positionKeymap";
+import { ArrowKey, getGlobalArrowDelta } from "./positionKeymap";
 import {
   updatePreview,
   showBoundingBoxTemporarily,
@@ -15,26 +15,37 @@ import {
 import { isCropModeEnabled } from "../state/modeState";
 import { getDisplayMetrics } from "../render/displayMetrics";
 import { emitTransformUiSync, isPositionInputFocusedState } from "../state/transformUiState";
+import { type CropArea } from "../types/media";
 
-let previewCanvas;
-let boundingBox;
-let cropBox;
+type HandleType = "nw" | "ne" | "sw" | "se" | "north" | "south" | "west" | "east";
+
+type SizeLimit = {
+  maxWidth?: number;
+  maxHeight?: number;
+};
+
+type Position = {
+  x: number;
+  y: number;
+};
+
+let previewCanvas: HTMLCanvasElement | null = null;
+let boundingBox: HTMLElement | null = null;
+let cropBox: HTMLElement | null = null;
 
 let isDragging = false;
 let isResizing = false;
 let dragStartX = 0;
 let dragStartY = 0;
-let resizeHandle = null;
+let resizeHandle: HTMLElement | null = null;
 let accumulatedScale = 0;
 let isCropDragging = false;
 let isCropResizing = false;
-let cropResizeHandle = null;
-let cropOriginalBounds = null;
-let cropAccumulatedDelta = { x: 0, y: 0 };
+let cropResizeHandle: HTMLElement | null = null;
 
 const MIN_CROP_SIZE = 50;
 
-const clamp = (value, min, max) => {
+const clamp = (value: number, min?: number, max?: number): number => {
   let result = value;
   if (typeof min === "number") {
     result = Math.max(min, result);
@@ -45,7 +56,7 @@ const clamp = (value, min, max) => {
   return result;
 };
 
-const getHandleType = (handleClass = "") => {
+const getHandleType = (handleClass = ""): HandleType | null => {
   if (handleClass.includes("--nw")) return "nw";
   if (handleClass.includes("--ne")) return "ne";
   if (handleClass.includes("--sw")) return "sw";
@@ -57,7 +68,13 @@ const getHandleType = (handleClass = "") => {
   return null;
 };
 
-const clampSizeToLimits = (width, height, ratio, maxWidth, maxHeight) => {
+const clampSizeToLimits = (
+  width: number,
+  height: number,
+  ratio: number,
+  maxWidth?: number,
+  maxHeight?: number,
+): { width: number; height: number } => {
   let nextWidth = Math.max(MIN_CROP_SIZE, width);
   let nextHeight = Math.max(MIN_CROP_SIZE, height);
 
@@ -82,7 +99,12 @@ const clampSizeToLimits = (width, height, ratio, maxWidth, maxHeight) => {
   return { width: nextWidth, height: nextHeight };
 };
 
-const getMaxDimensionsForHandle = (handleType, prevArea, imageWidth, imageHeight) => {
+const getMaxDimensionsForHandle = (
+  handleType: HandleType,
+  prevArea: CropArea,
+  imageWidth: number,
+  imageHeight: number,
+): SizeLimit => {
   const right = prevArea.x + prevArea.width;
   const bottom = prevArea.y + prevArea.height;
   const centerX = prevArea.x + prevArea.width / 2;
@@ -122,7 +144,12 @@ const getMaxDimensionsForHandle = (handleType, prevArea, imageWidth, imageHeight
   }
 };
 
-const positionCropAreaByHandle = (handleType, width, height, prevArea) => {
+const positionCropAreaByHandle = (
+  handleType: HandleType,
+  width: number,
+  height: number,
+  prevArea: CropArea,
+): Position => {
   const right = prevArea.x + prevArea.width;
   const bottom = prevArea.y + prevArea.height;
   const centerX = prevArea.x + prevArea.width / 2;
@@ -151,14 +178,14 @@ const positionCropAreaByHandle = (handleType, width, height, prevArea) => {
 };
 
 const enforceCropAspectRatio = (
-  handleClass,
-  prevArea,
-  cropArea,
-  resizeX,
-  resizeY,
-  imageWidth,
-  imageHeight,
-) => {
+  handleClass: string,
+  prevArea: CropArea,
+  cropArea: CropArea,
+  resizeX: number,
+  resizeY: number,
+  imageWidth: number,
+  imageHeight: number,
+): void => {
   const ratioKey = projectState.transformState.aspectRatio;
   if (!ratioKey || ratioKey === "free") return;
 
@@ -207,17 +234,20 @@ const enforceCropAspectRatio = (
   cropArea.height = size.height;
 };
 
-const initInteractionDomRefs = () => {
+const initInteractionDomRefs = (): void => {
   const refs = getDomRefs();
   previewCanvas = refs.previewCanvas;
   boundingBox = refs.boundingBox;
   cropBox = refs.cropBox;
 };
 
-const startDrag = (e) => {
-  if (e.target.classList.contains("bounding-box__handle")) {
+const startDrag = (e: MouseEvent): void => {
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  if (target.classList.contains("bounding-box__handle")) {
     isResizing = true;
-    resizeHandle = e.target;
+    resizeHandle = target;
   } else {
     isDragging = true;
   }
@@ -229,14 +259,17 @@ const startDrag = (e) => {
   e.stopPropagation();
 };
 
-const handleDrag = (e) => {
+const handleDrag = (e: MouseEvent): void => {
   if (!isDragging && !isResizing) return;
+  if (!previewCanvas) return;
 
   const deltaX = e.clientX - dragStartX;
   const deltaY = e.clientY - dragStartY;
 
   if (isDragging) {
     const bg = projectState.backgroundImage;
+    if (!bg) return;
+
     const cropArea = projectState.transformState.cropArea;
     const canvasRect = previewCanvas.getBoundingClientRect();
     const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea, canvasRect });
@@ -277,21 +310,22 @@ const handleDrag = (e) => {
   dragStartY = e.clientY;
 };
 
-const endDrag = () => {
+const endDrag = (): void => {
   isDragging = false;
   isResizing = false;
   resizeHandle = null;
   accumulatedScale = 0;
 };
 
-const setupBoundingBox = () => {
+const setupBoundingBox = (): void => {
   initInteractionDomRefs();
+  if (!boundingBox) return;
 
   boundingBox.addEventListener("mousedown", startDrag);
   document.addEventListener("mousemove", handleDrag);
   document.addEventListener("mouseup", endDrag);
 
-  boundingBox.addEventListener("touchstart", (e) => {
+  boundingBox.addEventListener("touchstart", (e: TouchEvent) => {
     const touch = e.touches[0];
     const mouseEvent = new MouseEvent("mousedown", {
       clientX: touch.clientX,
@@ -301,7 +335,7 @@ const setupBoundingBox = () => {
     e.preventDefault();
   });
 
-  document.addEventListener("touchmove", (e) => {
+  document.addEventListener("touchmove", (e: TouchEvent) => {
     if (isDragging || isResizing) {
       const touch = e.touches[0];
       const mouseEvent = new MouseEvent("mousemove", {
@@ -316,16 +350,13 @@ const setupBoundingBox = () => {
   document.addEventListener("touchend", endDrag);
 };
 
-const startCropDrag = (e) => {
-  if (e.target.classList.contains("crop-box__handle")) {
+const startCropDrag = (e: MouseEvent): void => {
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  if (target.classList.contains("crop-box__handle")) {
     isCropResizing = true;
-    cropResizeHandle = e.target;
-    cropOriginalBounds = {
-      left: parseInt(cropBox.style.left, 10),
-      top: parseInt(cropBox.style.top, 10),
-      width: parseInt(cropBox.style.width, 10),
-      height: parseInt(cropBox.style.height, 10),
-    };
+    cropResizeHandle = target;
   } else {
     isCropDragging = true;
   }
@@ -337,14 +368,17 @@ const startCropDrag = (e) => {
   e.stopPropagation();
 };
 
-const handleCropDrag = (e) => {
+const handleCropDrag = (e: MouseEvent): void => {
   if (!isCropDragging && !isCropResizing) return;
+  if (!previewCanvas) return;
 
   const deltaX = e.clientX - dragStartX;
   const deltaY = e.clientY - dragStartY;
 
   if (isCropDragging) {
     const bg = projectState.backgroundImage;
+    if (!bg) return;
+
     const canvasRect = previewCanvas.getBoundingClientRect();
     const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea: null, canvasRect });
 
@@ -357,8 +391,10 @@ const handleCropDrag = (e) => {
     const newX = Math.max(0, Math.min(bg.metadata.width - cropArea.width, cropArea.x + moveX));
     const newY = Math.max(0, Math.min(bg.metadata.height - cropArea.height, cropArea.y + moveY));
 
-    projectState.transformState.cropArea.x = newX;
-    projectState.transformState.cropArea.y = newY;
+    if (projectState.transformState.cropArea) {
+      projectState.transformState.cropArea.x = newX;
+      projectState.transformState.cropArea.y = newY;
+    }
 
     updateCropBox();
   } else if (isCropResizing && cropResizeHandle) {
@@ -366,7 +402,7 @@ const handleCropDrag = (e) => {
     const cropArea = projectState.transformState.cropArea;
     const canvasRect = previewCanvas.getBoundingClientRect();
 
-    if (!cropArea) return;
+    if (!bg || !cropArea) return;
 
     const metrics = getDisplayMetrics({ bgSize: bg.metadata, cropArea: null, canvasRect });
 
@@ -421,19 +457,20 @@ const handleCropDrag = (e) => {
   dragStartY = e.clientY;
 };
 
-const endCropDrag = () => {
+const endCropDrag = (): void => {
   isCropDragging = false;
   isCropResizing = false;
   cropResizeHandle = null;
-  cropAccumulatedDelta = { x: 0, y: 0 };
 };
 
-const setupCropBox = () => {
+const setupCropBox = (): void => {
+  if (!cropBox) return;
+
   cropBox.addEventListener("mousedown", startCropDrag);
   document.addEventListener("mousemove", handleCropDrag);
   document.addEventListener("mouseup", endCropDrag);
 
-  cropBox.addEventListener("touchstart", (e) => {
+  cropBox.addEventListener("touchstart", (e: TouchEvent) => {
     const touch = e.touches[0];
     const mouseEvent = new MouseEvent("mousedown", {
       clientX: touch.clientX,
@@ -443,7 +480,7 @@ const setupCropBox = () => {
     e.preventDefault();
   });
 
-  document.addEventListener("touchmove", (e) => {
+  document.addEventListener("touchmove", (e: TouchEvent) => {
     if (isCropDragging || isCropResizing) {
       const touch = e.touches[0];
       const mouseEvent = new MouseEvent("mousemove", {
@@ -458,13 +495,15 @@ const setupCropBox = () => {
   document.addEventListener("touchend", endCropDrag);
 };
 
-const setupCanvasClick = () => {
-  previewCanvas.addEventListener("click", (e) => {
-    if (isCropModeEnabled()) return;
+const setupCanvasClick = (): void => {
+  previewCanvas?.addEventListener("click", (e: MouseEvent) => {
+    if (isCropModeEnabled() || !previewCanvas) return;
     if (projectState.transparentImages.length === 0) return;
 
-    const transparentImg = projectState.transparentImages[0];
     const bg = projectState.backgroundImage;
+    if (!bg) return;
+
+    const transparentImg = projectState.transparentImages[0];
     const scale = projectState.transformState.scale;
     const pos = projectState.transformState.position;
     const cropArea = projectState.transformState.cropArea;
@@ -500,8 +539,8 @@ const setupCanvasClick = () => {
   });
 };
 
-const setupWindowResize = () => {
-  let resizeTimeout = null;
+const setupWindowResize = (): void => {
+  let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
   const handleResize = () => {
     if (!projectState.backgroundImage) return;
@@ -532,7 +571,10 @@ const setupWindowResize = () => {
   });
 };
 
-const setupInteractionControls = () => {
+/**
+ * プレビュー領域のインタラクションコントロールを初期化する。
+ */
+const setupInteractionControls = (): void => {
   initInteractionDomRefs();
   setupBoundingBox();
   setupCropBox();
@@ -541,9 +583,9 @@ const setupInteractionControls = () => {
   setupKeyboardPositionControls();
 };
 
-const isPositionInputActive = () => isPositionInputFocusedState();
+const isPositionInputActive = (): boolean => isPositionInputFocusedState();
 
-const handleGlobalArrowKeyDown = (e) => {
+const handleGlobalArrowKeyDown = (e: KeyboardEvent): void => {
   if (
     e.defaultPrevented ||
     isCropModeEnabled() ||
@@ -561,14 +603,15 @@ const handleGlobalArrowKeyDown = (e) => {
     return;
   }
 
-  const delta = getGlobalArrowDelta(e.key, e.shiftKey);
+  const arrowKey = e.key as ArrowKey;
+  const delta = getGlobalArrowDelta(arrowKey, e.shiftKey);
   if (!delta) return;
 
   e.preventDefault();
   nudgePosition(delta.axis, delta.delta);
 };
 
-const setupKeyboardPositionControls = () => {
+const setupKeyboardPositionControls = (): void => {
   window.addEventListener("keydown", handleGlobalArrowKeyDown);
 };
 
