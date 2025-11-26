@@ -27,10 +27,7 @@
 
     <main class="app__main">
       <EditorPage v-show="isEditTab" />
-
-      <section class="tab-panel tab-panel--preview" v-show="isPreviewTab" role="tabpanel">
-        <XPreviewPage :previewDataUrl="previewDataUrl" />
-      </section>
+      <XPreviewPage :previewDataUrl="previewDataUrl" v-show="isPreviewTab" />
     </main>
 
     <div id="errorMessage" class="error-message" style="display: none"></div>
